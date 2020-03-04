@@ -49,7 +49,6 @@ class Masfuerza_Posts {
 	 */
 	public function custom_type_save_post( $post_id ) {
 		$post_type = get_post_type( $post_id );
-		print_r($post_type);die;
 		
 		$data = array(
 			'ID' => $post_id
