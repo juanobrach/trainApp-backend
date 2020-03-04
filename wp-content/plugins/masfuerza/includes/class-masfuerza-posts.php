@@ -80,7 +80,6 @@ class Masfuerza_Posts {
 				$data['post_title'] = $title;
 				$data['post_name']  = sanitize_title( $title );
 
-				print_r($title);die;
 				
 
 				// Set a category from custom category field
