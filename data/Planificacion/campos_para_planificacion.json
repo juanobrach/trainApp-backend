@@ -1,0 +1,297 @@
+[
+    {
+        "key": "group_5d71d3727a605",
+        "title": "Campos de una planificaicon",
+        "fields": [
+            {
+                "key": "field_5d75b179e9b7a",
+                "label": "Atleta",
+                "name": "athlete",
+                "type": "user",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "role": [
+                    "athlete"
+                ],
+                "allow_null": 0,
+                "multiple": 0,
+                "return_format": "array"
+            },
+            {
+                "key": "field_5d8cd952fa169",
+                "label": "Rutinas",
+                "name": "routines",
+                "type": "repeater",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "block",
+                "button_label": "Agregar rutina",
+                "sub_fields": [
+                    {
+                        "key": "field_5d8fcc604c21f",
+                        "label": "Veces por semana",
+                        "name": "days_per_week",
+                        "type": "select",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "choices": {
+                            "2 veces por semana": "2 veces por semana",
+                            "3 veces por semana": "3 veces por semana"
+                        },
+                        "default_value": [
+                            "2 veces por semana"
+                        ],
+                        "allow_null": 0,
+                        "multiple": 0,
+                        "ui": 0,
+                        "return_format": "value",
+                        "ajax": 0,
+                        "placeholder": ""
+                    },
+                    {
+                        "key": "field_5d8cda19fa16a",
+                        "label": "Dias de la semana",
+                        "name": "weekdays",
+                        "type": "checkbox",
+                        "instructions": "Desde el administrador de WP se debe tener en cuenta que se deberan seleccionar grupos de 2 dias minimo a 3 dias maximo y se debera verificar de no repetir los dias ya seleccionados en otras rutinas.\r\n\r\nEl sistema cuenta con dosificaciones de carga que esperan rutinas de 2  dias minimo a 3 dias maximo",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "choices": {
+                            "Lunes": "Lunes",
+                            "Martes": "Martes",
+                            "Miercoles": "Miercoles",
+                            "Jueves": "Jueves",
+                            "Viernes": "Viernes",
+                            "Sabado": "Sabado"
+                        },
+                        "allow_custom": 0,
+                        "default_value": [],
+                        "layout": "vertical",
+                        "toggle": 0,
+                        "return_format": "value",
+                        "save_custom": 0
+                    },
+                    {
+                        "key": "field_5d8cda4bfa16b",
+                        "label": "Calentamiento",
+                        "name": "heating",
+                        "type": "relationship",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "post_type": [
+                            "heating"
+                        ],
+                        "taxonomy": "",
+                        "filters": [
+                            "search",
+                            "post_type",
+                            "taxonomy"
+                        ],
+                        "elements": "",
+                        "min": 1,
+                        "max": 1,
+                        "return_format": "object"
+                    },
+                    {
+                        "key": "field_5d8cdb19fc858",
+                        "label": "Ejercicios",
+                        "name": "workouts",
+                        "type": "repeater",
+                        "instructions": "",
+                        "required": 0,
+                        "conditional_logic": 0,
+                        "wrapper": {
+                            "width": "",
+                            "class": "",
+                            "id": ""
+                        },
+                        "collapsed": "",
+                        "min": 0,
+                        "max": 0,
+                        "layout": "block",
+                        "button_label": "Agregar ejercicio",
+                        "sub_fields": [
+                            {
+                                "key": "field_5d8cdb33fc859",
+                                "label": "Ejercicio",
+                                "name": "workout",
+                                "type": "relationship",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "post_type": [
+                                    "exercise"
+                                ],
+                                "taxonomy": "",
+                                "filters": [
+                                    "search",
+                                    "post_type",
+                                    "taxonomy"
+                                ],
+                                "elements": "",
+                                "min": 1,
+                                "max": 1,
+                                "return_format": "object"
+                            },
+                            {
+                                "key": "field_5d8cdb7ecbb23",
+                                "label": "Dosificacion 2 veces x semana",
+                                "name": "dosage_2",
+                                "type": "relationship",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": [
+                                    [
+                                        {
+                                            "field": "field_5d8fcc604c21f",
+                                            "operator": "==",
+                                            "value": "2 veces por semana"
+                                        }
+                                    ]
+                                ],
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "post_type": [
+                                    "dosing"
+                                ],
+                                "taxonomy": [
+                                    "weekdays:2_weekdays"
+                                ],
+                                "filters": [
+                                    "search",
+                                    "post_type",
+                                    "taxonomy"
+                                ],
+                                "elements": "",
+                                "min": 1,
+                                "max": 1,
+                                "return_format": "object"
+                            },
+                            {
+                                "key": "field_5d8d782592b86",
+                                "label": "Dosificacion 3 veces x semana",
+                                "name": "dosage_3",
+                                "type": "relationship",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": [
+                                    [
+                                        {
+                                            "field": "field_5d8fcc604c21f",
+                                            "operator": "==",
+                                            "value": "3 veces por semana"
+                                        }
+                                    ]
+                                ],
+                                "wrapper": {
+                                    "width": "",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "post_type": [
+                                    "dosing"
+                                ],
+                                "taxonomy": [
+                                    "weekdays:3_weekdays"
+                                ],
+                                "filters": [
+                                    "search",
+                                    "post_type",
+                                    "taxonomy"
+                                ],
+                                "elements": "",
+                                "min": 1,
+                                "max": 1,
+                                "return_format": "object"
+                            },
+                            {
+                                "key": "field_5d8eaf96d0b68",
+                                "label": "Super serie",
+                                "name": "super_serie",
+                                "type": "relationship",
+                                "instructions": "",
+                                "required": 0,
+                                "conditional_logic": 0,
+                                "wrapper": {
+                                    "width": "100",
+                                    "class": "",
+                                    "id": ""
+                                },
+                                "post_type": [
+                                    "exercise"
+                                ],
+                                "taxonomy": "",
+                                "filters": [
+                                    "search",
+                                    "post_type",
+                                    "taxonomy"
+                                ],
+                                "elements": "",
+                                "min": 1,
+                                "max": 1,
+                                "return_format": "object"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "planification"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]
