@@ -207,6 +207,8 @@ class Masfuerza {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'load-post.php', $masFuerza_posts, 'on_edit_post');
+
 		$this->loader->add_action( 'acf/save_post', $masFuerza_posts, 'custom_type_save_post', 20 );
 		$this->loader->add_action( 'admin_head-post.php', $masFuerza_posts, 'check_for_notice' );
 		$this->loader->add_action( 'rest_api_init', $masFuerza_api, 'init_api' );

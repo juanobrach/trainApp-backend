@@ -27,6 +27,21 @@
 class Masfuerza_Posts {
 
 
+
+	public function on_edit_post( $post ) {
+		$screen = get_current_screen();
+		
+		if (! empty($_GET['post']) )
+		{
+			$post = get_post($_GET['post']);			
+			if (! empty($post->post_content) )
+			{
+				update_field('name', $post->post_title, $post->ID);
+			}
+		}
+
+	} 
+
 	/**
 	 * Hook when post is saved and save the field "name" as a WP title
 	 *
@@ -34,6 +49,7 @@ class Masfuerza_Posts {
 	 */
 	public function custom_type_save_post( $post_id ) {
 		$post_type = get_post_type( $post_id );
+		print_r($post_type);die;
 		
 		$data = array(
 			'ID' => $post_id
@@ -64,6 +80,9 @@ class Masfuerza_Posts {
 				$title              = get_field( 'name', $post_id ); 
 				$data['post_title'] = $title;
 				$data['post_name']  = sanitize_title( $title );
+
+				print_r($title);die;
+				
 
 				// Set a category from custom category field
 				$category = get_field('category', $post_id);
