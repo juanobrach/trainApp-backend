@@ -6,15 +6,15 @@ class Exercise extends Controller{
     public function get_all_exercises(){
         $data = array();
         $search_results = get_posts(array( 'post_type'=> 'exercise'));
-
+        
 
         foreach( $search_results as $excercise ){
             
             $excercise_meta = get_post_meta($excercise->ID);
-            // print_r($excercise_meta);
 
-            $category_object = get_term( $excercise_meta['category'][0] );
-            $category = $category_object->name;
+
+            $exercise_category = get_the_terms( $excercise->ID, 'exercise_category' );      
+            $category = $exercise_category[0]->name;
 
             $images_ids =  maybe_unserialize( $excercise_meta['images'][0] );
             $images = array();
@@ -44,8 +44,9 @@ class Exercise extends Controller{
             $excercise_meta = get_post_meta($excercise->ID);
             // print_r($excercise_meta);
 
-            $category_object = get_term( $excercise_meta['category'][0] );
-            $category = $category_object->name;
+            
+            $exercise_category = get_the_terms( $excercise->ID, 'exercise_category' );      
+            $category = $exercise_category[0]->name;
 
             $images_ids =  maybe_unserialize( $excercise_meta['images'][0] );
             $images = array();
