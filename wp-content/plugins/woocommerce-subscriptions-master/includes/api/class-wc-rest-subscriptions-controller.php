@@ -48,7 +48,7 @@ class WC_REST_Subscriptions_Controller extends WC_REST_Orders_V1_Controller {
 	 */
 	public function register_routes() {
 		parent::register_routes();
-
+		
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/orders', array(
 			array(
 				'methods'             => WP_REST_Server::READABLE,

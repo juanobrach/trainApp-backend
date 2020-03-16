@@ -43,28 +43,33 @@ class Dosing extends Controller{
 
         foreach( $search_results as $dosing ){
             $dosage_id = $dosing->ID;
-            $data[$dosage_id] = array();
+            $data[] = array();
             
             $meta_data = get_post_meta($dosage_id);
             
             $trainee_per_week = $meta_data['trainee_per_week'][0];
             $charge_type      = $meta_data['charge_type'][0];
-
-            $data[$dosage_id]["trainee_per_week"] = $trainee_per_week;
-            $data[$dosage_id]["charge_type"] = $charge_type;            
-            
             $total_weeks = 4;
 
+            $weeksDosings  = array(); 
+            $weeks = array();
             for( $week = 1; $week <= $total_weeks; $week++ ){
-                $data[$dosage_id]["weeks"][$week] = array();
+                $weekData = array();
                 for( $day = 1; $day <= $trainee_per_week ; $day++ ){
                     $field_name = "programa_".$trainee_per_week."_weekdays_semana_". $week .'_day_'.$day;
                     $daily_dosing_value = $meta_data[$field_name][0]; 
-                    $data[$dosage_id]["weeks"][$week]['days'][] = $daily_dosing_value; 
+                    $weekData[] = $daily_dosing_value; 
                 }
+                $weeks[] = $weekData;
             }
-
-            $data[$dosage_id]['title'] =  $dosing->post_title;             
+            $data = array(
+                "id"=> $dosage_id,
+                "traineePerWeek" => (int)$trainee_per_week,
+                "chargeType" => $charge_type,
+                'name' =>  $dosing->post_title,
+                'weeks' => $weeks
+            );
+                   
         }
         return $data;
     }

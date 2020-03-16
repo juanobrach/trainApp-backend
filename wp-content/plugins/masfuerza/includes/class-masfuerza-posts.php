@@ -99,6 +99,12 @@ class Masfuerza_Posts {
 				$data['post_name']  = sanitize_title( $title );
 				wp_update_post( $data );
 			break;
+			case 'program':
+				$title              = get_field( 'name', $post_id ); 
+				$data['post_title'] = $title;
+				$data['post_name']  = sanitize_title( $title );
+				wp_update_post( $data );
+			break;
 		}
 	}
 
@@ -123,6 +129,10 @@ class Masfuerza_Posts {
 		return $args;
 	}
 
+	/**
+	 *  Asign athlete creted to the current user logged in. It should a trainer createing a new user as their
+	 *  athlete.
+	 */
 	public function registration_save( $user_id ) {
 		$user_meta=get_userdata($user_id);
 		$user_roles=$user_meta->roles;
