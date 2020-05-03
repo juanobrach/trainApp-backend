@@ -16,6 +16,12 @@ class ProgramExerciseController extends Controller{
         return false;
     }
 
+    public function handle_add_exercises($data){
+        $added_exercises =  $this->add_exercises( $data );
+        if($added_exercises) return $data;
+        return false;
+    }
+
 
     /**
      *  Delete exercise
@@ -31,5 +37,21 @@ class ProgramExerciseController extends Controller{
         if($deleted === true) return true;
         return false;
     }
+
+
+    public function add_exercises($data){
+        
+        $program_id = $data->programId;
+        $routine_id = $data->routineId;
+        $exercise_routine_id = ($data->workoutRoutineId )+ 1;
+        
+        $added = add_row( "routines_".$routine_id."_workouts", $exercise_routine_id ,$program_id);
+    
+        if($added === true) return true;
+        return false;
+    }
+
+
+
 
 }

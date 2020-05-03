@@ -178,6 +178,11 @@ class Masfuerza {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Athlete/class-athlete-controller.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Athlete/class-athlete-api.php';
 
+		// Trainer
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Trainer/class-trainer-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Trainer/class-trainer-api.php';
+	
+	
 		// Helpers
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Helpers/index.php';
 

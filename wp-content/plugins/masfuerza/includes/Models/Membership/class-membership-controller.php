@@ -7,73 +7,169 @@ class Membership extends Controller{
         include('../wp-load.php'); //Guessing this path based on your code sample... should be wp root
 
         $this->Subscriptions_Manager = WC_Subscriptions_Manager;
-
+        $this->Planification  = new Planification();
 
     }
 
 
     public function get_subscription_by_trainer_id($trainer_id){
+        $subscription;
+        $subscription_product;
+
 
         $query_user_subscription = wcs_get_users_subscriptions($trainer_id);
         if( !empty($query_user_subscription) ){
-            foreach($query_user_subscription as $user_subscription_object ){
-                $subscription = $user_subscription_object->get_data();
+            foreach($query_user_subscription as $subscription ){
+
+                if ( sizeof( $subscription_items = $subscription->get_items() ) > 0 ) {
+                    foreach ( $subscription_items as $item_id => $item ) {
+                        $product = $item->get_product();
+
+                        
+                        $attributes = array();
+                        foreach ($product->get_attributes() as $_attributes) {
+                            $attributes[] = array( 
+                                'name' => $_attributes->get_name(),
+                                'value'=> $_attributes->get_options()[0]
+                            );
+                            
+                            
+                        }
+
+                        $subscription_product = array(
+                            'id'=> $product->get_id(),
+                            'sku' => $product->get_sku(),
+                            'name' => $product->get_name(),
+                            'price'=> $product->get_price(),
+                            'attributes'=> $attributes
+                        );
+
+
+                        
+                        //Examples of use
+                        $product->get_image('post-thumbnail', ['class' => 'alignleft'], false); // main image
+                
+                        $product_id = wcs_get_canonical_product_id( $item ); // get product id directly from item
+                    }
+                }
+
+
+                $subscription_data = json_decode( json_encode( $subscription->get_data(), true ) );
+                
+                $isRecurrent = (  $subscription_data->requires_manual_renewal === true ? false : true );
+                $planifications_plan_amount = (int)$subscription_product['attributes'][0]['value'];
+                $planifications_actives = $this->Planification->get_active_planifications_by_trainer_id($trainer_id);
+                $asigned = $planifications_actives;
+            
+
+                $subscription = array(
+                    'active'=> $subscription_data->status,
+                    'from' => $subscription_data->date_created->date,
+                    'to' =>  $subscription_data->schedule_next_payment->date,
+                    'woocommerceId'=> $subscription_data->id,
+                    'paymentInformation'=> array(
+                        'method'=> $subscription_data->payment_method,
+                        'isRecurrent'=> $isRecurrent
+                    ),
+                    'product'=> $subscription_product,
+                    'services'=> array(
+                        'planifications'=> array(
+                            'asigned' => $asigned,
+                            'availables'=> $planifications_plan_amount - $asigned,
+                            'total'=> $planifications_plan_amount
+                        )   
+                    )
+
+                );  
             }            
         }
+
+
+
         return $subscription;        
 
     }
 
     public function get_all_subscriptions(){
-        
-        try{
+        $subscription;
+        $subscription_product;
 
-            $query_all_subscriptions = $this->Subscriptions_Manager::get_all_users_subscriptions();
-            $subscriptions = array();
 
+        $query_user_subscription = wcs_get_users_subscriptions();
+        if( !empty($query_user_subscription) ){
             
-            if( !empty($query_all_subscriptions) ){
-                foreach( $query_all_subscriptions as $_subscription ){
-                    $subscription = array();
-                    
-                    $product_id = $_subscription['product_id'];
-                    $product_object = wc_get_product( $product_id );
+            
+            
+            foreach($query_user_subscription as $subscription ){
 
-                    $product = array(
-                        'id' => $product_id, 
-                        'name' => $product_object->get_name(),
-                        'status' => $product_object->get_status(),
-                        'description' => $product_object->get_description(),
-                        'sku' => $product_object->get_sku(),
-                        'price' => $product_object->get_price()
-                    );
+                
+                $product;
+                if ( sizeof( $subscription_items = $subscription->get_items() ) > 0 ) {
+                    foreach ( $subscription_items as $item_id => $item ) {
+                        $product = $item->get_product();
 
-                    $order_object  = wc_get_order($_subscription['order_id']);
-                    $order = $order_object->get_data();
+                        
+                        $attributes = array();
+                        foreach ($product->get_attributes() as $_attributes) {
+                            $attributes[] = array( 
+                                'name' => $_attributes->get_name(),
+                                'value'=> $_attributes->get_options()[0]
+                            );
+                            
+                            
+                        }
+
+                        $subscription_product = array(
+                            'id'=> $product->get_id(),
+                            'sku' => $product->get_sku(),
+                            'name' => $product->get_name(),
+                            'price'=> $product->get_price(),
+                            'attributes'=> $attributes
+                        );
 
 
-
-                    $subscription = array(
-                        'subscription_id' => $_subscription['order_id'],
-                        'status'=> $_subscription['status'],
-                        'period'=>$_subscription['period'],
-                        'interval'=> $_subscription['interval'],
-                        'start_date'=> $_subscription['start_date'],
-                        'completed_payments'=> $_subscription['completed_payments'],
-                        'last_payment_date'=> $_subscription['last_payment_date'],
-                        'product'=> $product,
-                        'order'=>$order
-                    );
-
-                    $subscriptions[] = $subscription;
-
+                        
+                        //Examples of use
+                        $product->get_image('post-thumbnail', ['class' => 'alignleft'], false); // main image
+                
+                        $product_id = wcs_get_canonical_product_id( $item ); // get product id directly from item
+                    }
                 }
-            }
-            return $subscriptions;
-                 
-        } catch (Exception $e) {
-            echo 'Caught exception: ',  $e->getMessage(), "\n";
+
+                            
+                $subscription_data = json_decode( json_encode( $subscription->get_data(), true ) );
+
+                $isRecurrent = (  $subscription_data->requires_manual_renewal === true ? false : true );
+                $isActive =  ( $subscription_data->status === 'active' ? true : false );
+                $planifications_plan_amount = $subscription_product['attributes'][0]['value'][0];
+                $planifications_actives = $this->Planification->get_active_planifications_by_trainer_id($trainer_id);
+                $asigned = $planifications_actives;
+                            
+                $subscription = array(
+                    'active'=> $isActive,
+                    'from' => $subscription_data->date_created->date,
+                    'to' =>  $subscription_data->schedule_next_payment->date,
+                    'woocommerceId'=> $subscription_data->id,
+                    'paymentInformation'=> array(
+                        'method'=> $subscription_data->payment_method,
+                        'isRecurrent'=> $isRecurrent
+                    ),
+                    'product'=> $subscription_product,
+                    'services'=> array(
+                        'planifications'=> array(
+                            'asigned' => $asigned,
+                            'availables'=> $planifications_plan_amount - $asigned,
+                            'total'=> (int)$planifications_plan_amount
+                        )   
+                    )
+
+                );  
+            }            
         }
+
+
+
+        return $subscription;        
     }
     
 }

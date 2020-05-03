@@ -25,10 +25,14 @@ class Auth extends Controller{
          
         if ( is_wp_error( $response ) ) {
             $error_message = $response->get_error_message();
+            
         } else {
+
+
             $response = json_decode( $response['body'] );            
             if($response->message){
-                return $response->message;
+                return new WP_Error($response->message);
+                // return $response->message;
             }
 
             $user_data = $response;

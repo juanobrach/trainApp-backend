@@ -5,10 +5,24 @@ class Athlete extends Controller{
     public function __construct(){}
 
 
+    public function get_athlete_data($athlete_id){        
+        $Planification = new Planification();
+        $planifications;
+
+        $planifications   = $Planification->get_planification_by_athlete_id($athlete_id);
+        $trainer =  $this->get_athlete_trainer_data($athlete_id);
+        
+        return array(
+            'planifications'=> $planifications,
+            'trainer' => $trainer
+        );
+    }
+
+
     public function create_athlete($data){
 
         $user_credentials = array(
-            "username" => $data->athlete->email,
+            "username" => $data->athlete->username,
             "password" => $data->athlete->mobile,
             "email"    => $data->athlete->email
         );        
@@ -114,6 +128,19 @@ class Athlete extends Controller{
         $currentuserid_fromjwt = get_current_user_id();
         print_r($currentuserid_fromjwt);
         exit;
+    }
+
+    public function get_athlete_trainer_data($athlete_id){    
+        $trainer_id = get_user_meta( $athlete_id, 'trainer', true );
+        $trainer_data = get_user_meta( $trainer_id );
+        $trainer = array(
+            'firstName'=> $trainer_data['first_name'][0],
+            'lastName'=> $trainer_data['last_name'][0],
+            'email' => $trainer_data['billing_email'][0],
+            'phone' => $trainer_data['phone'][0]
+        );
+
+        return $trainer;           
     }
 
 

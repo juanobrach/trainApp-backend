@@ -23,8 +23,24 @@ class AthleteAPI {
             'callback' => array($this, 'get_athlete_by_id'),
         ));
 
-    }
+
+        register_rest_route( 'masfuerza/v1', '/athlete/get_athlete_data', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_get_athlete_data'),
+        ));
+
+
         
+
+    }
+
+    public function handle_get_athlete_data($request){
+        $data = json_decode ( $request->get_body() );
+        $athlete_id = $data->athlete_id;       
+        return $this->athlete->get_athlete_data($athlete_id);
+     }
+
+
     public function get_athlete_by_id( $request ){
         $athlete_id = $request['id'];
         if( !empty($athlete_id)){
