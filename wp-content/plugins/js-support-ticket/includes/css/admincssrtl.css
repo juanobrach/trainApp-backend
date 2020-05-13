@@ -1,0 +1,263 @@
+/* dashboard */
+#jsstadmin-leftmenu {left: auto;right: 0;}
+#jsstadmin-data {padding-left: 0;padding-right: 70px;}
+#jsstadmin-wrapper:not(.menu-collasped-active) #jsstadmin-leftmenu .jsstadmin-sidebar-menu li.treeview:hover .jsstadmin-sidebar-submenu {left: auto;right: 60px;}
+#jsstadmin-wrapper:not(.menu-collasped-active) #jsstadmin-leftmenu .jsstadmin-sidebar-menu li.treeview:hover .jsstadmin-sidebar-submenu::before {left: auto;right: -5px;}
+.jsstadmin-sidebar-menu > li > a:not(.jsst_js-install-btn):hover, 
+.jsstadmin-sidebar-menu > li.active > a:not(.jsst_js-install-btn), 
+.jsstadmin-sidebar-menu > li.menu-open > a:not(.jsst_js-install-btn) {border-left: 0;border-right: 3px solid #1572e8;}
+#jsstadmin-logo #jsstadmin-menu-toggle {float: left;}
+.menu-collasped-active #jsstadmin-data {padding-left: 0;padding-right: 270px;}
+.jsstadmin-sidebar-menu li a .jsst_text {padding-left: 0;padding-right: 5px;}
+div#js_ddl span#js_combo #translations {background-position: 10px;}
+#premade {float: right;}
+.jsstadmin-form .js-form-wrapper .js-form-perm-msg {float: right;margin-right: 0;margin-left: 8px;}
+.jsstadmin-form .js-form-wrapper .js-form-append {float: right;}
+.js-det-tkt-form .js-form-wrapper .js-ticket-detail-append-signature-xs {float: right;}
+#jsstadmin-wrapper-top-left {float: right;}
+#jsstadmin-wrapper-top-right {float: left;}
+#jsstadmin-config-btn {float: right;}
+#jsstadmin-vers-txt {float: right;margin-left: 0;margin-right: 5px;}
+#jsstadmin-head .jsstadmin-head-text {float: right;}
+#jsstadmin-head .jsstadmin-add-link {float: left;margin-left: 0;margin-right: 8px;}
+#jsstadmin-head .jsstadmin-add-link img {margin-right: 0;margin-left: 3px;}
+.js-cp-cnt-left {float: right;padding-right: 0;padding-left: 20px;}
+.js-ticket-count div.js-ticket-link {float: right;}
+#js-main-cp-wrapper .js-cp-cnt-title .js-cp-cnt-title-txt {float: right;}
+.js-cp-baner .js-cp-baner-cnt {float: right;}
+.js-cp-baner .js-cp-baner-img {right: auto;left: 0;}
+#js-main-cp-wrapper .js-cp-cnt-title .js-cp-cnt-title-txt {float: right;}
+#js-main-cp-wrapper .js-cp-cnt-title .js-cp-cnt-title-btn {float: left;}
+.js-cp-tkt-list .js-cp-tkt-list-left {float: right;}
+.js-cp-tkt-list .js-cp-tkt-list-left .js-cp-tkt-image {float: right;}
+.js-cp-tkt-list .js-cp-tkt-list-left .js-cp-tkt-cnt {padding-left: 0;padding-right: 10px;}
+.js-cp-tkt-list .js-cp-tkt-list-left .js-cp-tkt-cnt .js-cp-tkt-info .js-cp-tkt-info-label {margin-right: 0;margin-left: 5px;}
+.js-cp-tkt-list .js-cp-tkt-status {float: right;}
+.js-cp-tkt-list .js-cp-tkt-crted {float: right;}
+.js-cp-tkt-list .js-cp-tkt-prorty {float: right;}
+.js-cp-feedback-wrp {float: right;margin-right: 0;margin-left: 10px;}
+.js-cp-feedback .js-cp-feedback-image {float: right;}
+.js-cp-feedback .js-cp-feedback-cnt .js-cp-feedback-row .js-cp-feedback-crt-date {margin-left: 0;margin-right: 5px;}
+.js-cp-feedback .js-cp-feedback-cnt .js-cp-feedback-row .js-cp-feedback-val {margin-right: 3px;margin-left: 0;}
+.js-cp-addon-wrp {margin-left: 0;margin-right: 10px;}
+.js-cp-addon-list .js-cp-addon .js-cp-addon-image {float: right;}
+.js-cp-addon-list .js-cp-addon .js-cp-addon-cnt {float: right;}
+#jsreview-banner .review {background-position: top right, top left, center center;}
+#jsreview-banner .review .upper .simple-text {margin-right: 0;margin-left: 8px;}
+#jsreview-banner .review .upper .review-link img {margin-right: 0;margin-left: 2px;}
+#jsreview-banner .review .lower .simple-text {margin-right: 0;margin-left: 8px;}
+#js-wrapper-menus .js-admin-menu-link img.jsmenu-img {margin-right: 0;margin-left: 5px;}
+
+/* about us */
+.js-admin-heading .js-admin-head-txt {float: right;}
+.jssst-admin-about-author .jssst-author-cnt .jssst-author-info .jssst-auth-info-title {float: right;text-align: left;border-left: 1px solid #ebecec;border-right: 0;}
+
+/* translations */
+div#js-language-wrapper div.gettranslation img {margin-right: 0;margin-left: 10px;}
+div#js-lang-toserver .col:first-child {float: right;}
+div#js-lang-toserver .col:last-child {padding-right: 10px;padding-left: 0;}
+div#js-lang-toserver a.anc img {margin-right: 0;margin-left: 10px;}
+div#js_ddl span.button img {margin-right: 0;margin-left: 10px;}
+div.js-some-disc img {margin-right: 0;margin-left: 7px;}
+
+/* system error */
+table#js-support-ticket-table tr .left {text-align: right;}
+table#js-support-ticket-table tr th,
+table#js-support-ticket-table tr td {border-left: 1px solid #ebecec;border-right: 0;}
+table#js-support-ticket-table tr th:last-child,
+table#js-support-ticket-table tr td:last-child {border-left: 0;}
+.tablenav .tablenav-pages {float: left;}
+
+/* top search */
+.js-filter-form .js-form-input-field {float: right;}
+.js-filter-form .js-form-select-field {float: right;}
+.js-filter-form .js-form-date-field {float: right;}
+.js-filter-form .button {float: right;}
+.js-admin-sorting {float: left;}
+.js-admin-sorting .js-admin-sort-select {float: right;}
+.js-filter-form .js-form-select-field {background-position: 10px 15px;}
+#jssupportticketform #userpopup {float: right;}
+
+/* forms */
+.jsstadmin-form .js-form-wrapper {float: right;}
+.jsstadmin-form .js-form-wrapper .js-form-link {float: left;}
+.jsstadmin-form .js-form-wrapper #userpopup {right: auto;left: 0;}
+.tk_attachment_value_wrapperform .tk_attachment_value_text {float: right;margin-right: 0;margin-left: 10px;float: right !important;}
+.tk_attachment_value_wrapperform .tk_attachment_value_text .tk_attachment_remove {right: auto;left: 10px;}
+.js_ticketattachment {margin-right: 0;margin-left: 10px;float: right;}
+.js_ticketattachment a {float: left;}
+.jsstadmin-form .js-form-wrapper .js-form-select-field {background-position: 10px 15px;}
+.js-ticket-configuration-row {float: right;}
+.js-ticket-configuration-row .js-ticket-configuration-link {float: left;}
+.js-ticket-configuration-row .js-ticket-configuration-value select {background-position: 10px 15px;}
+.js-admin-ticketviaemail-wrapper-checksetting #js-admin-ticketviaemail {float: right;padding: 8px 40px 8px 15px;}
+.js-admin-ticketviaemail-wrapper-checksetting #js-admin-ticketviaemail img {left: auto;right: 5px;}
+#cp_wraper .tabs ul li {float: right;margin-right: 0;margin-left: 3px;}
+#cron_job .crown_text_left {float: right;padding-left: 0;padding-right: 1%;}
+#cron_job .crown_text_right {float: left;text-align: right;}
+.jsst-button-link.user-field-val-button {float: right;}
+.jsstadmin-form .js-form-wrapper .js-form-value {margin-right: 0;margin-left: 10px;float: right;}
+.jsstadmin-form .js-form-wrapper .jsst-formfield-radio-button-wrap {float: right;margin-right: 0;margin-left: 5px;}
+.tabs .jsst_tabs .tab-link {float: right;}
+.js-ticket-configuration-row-mail .js-ticket-conf-text-sub {float: right;}
+.js-ticket-configuration-row-mail .js-ticket-conf-text-sub:first-child {margin-right: 25%;margin-left: 0;}
+.js-ticket-configuration-row-mail .js-ticket-configuration-title {float: right;}
+.js-ticket-configuration-row-mail .js-ticket-configuration-value {float: right;}
+.js-ticket-configuration-row-mail .js-ticket-configuration-value select {background-position: 10px 15px;}
+.jsst_error_messages .jsst_msg {text-align: right;background-position: 99% 40%;padding-right: 50px;}
+div#theme_heading div.left_side {float: right;}
+div#theme_heading div a {float: left;margin-right: 0;margin-left: 20px;}
+div.js_theme_section {float: right;}
+div.js_effect_preview {padding-left: 0;padding-right: 10px;}
+div#jsst-header div#jsst-header-heading {float: right !important;}
+div#jsst-header span.jsst-header-tab {margin-right: 0 !important;margin-left: 7px;}
+div#jsst-header span.jsst-header-tab.js-ticket-loginlogoutclass {float: left !important;}
+div.js-ticket-sorting span.js-ticket-sorting-link {float: right;}
+div.js-ticket-wrapper div.js-ticket-data span.js-ticket-status {right: auto !important;left: 2%;}
+.jsstadmin-form .js-form-wrapper #helptopic select {background-position: 10px;}
+.input-field-wrapper {float: right;margin-right: 0;margin-left: 10px;}
+
+/* popups */
+div#userpopup .userpopup-top .userpopup-heading {float: right;}
+div#userpopup .userpopup-top .userpopup-close {float: left;}
+div#userpopup .userpopup-search form .userpopup-fields-wrp .userpopup-fields {float: right;}
+div#userpopup .userpopup-search form .userpopup-fields-wrp .userpopup-btn-wrp input {float: right;margin-left: 0;margin-right: 5px;}
+.js-ticket-table-wrp .js-ticket-table-header .js-ticket-table-header-col {float: right;}
+.js-ticket-table-wrp .js-ticket-table-body .js-ticket-data-row .js-ticket-table-body-col {float: right;}
+.jsst_userpages {text-align: left;}
+.userpopup-search-history-row .userpopup-search-history-col {float: right;border-left: 1px solid #ebecec;border-right: 0;}
+.userpopup-search-history-row .userpopup-search-history-col:last-child {text-align: right;}
+.jsst-popup-wrapper .userpopup-top .userpopup-close {float: left;}
+.jsst-merge-popup-wrapper .js-ticket-wrapper .js-ticket-data .js-ticket-title {margin-right: 0;margin-left: 3px;}
+.jsst-merge-popup-wrapper .js-ticket-wrapper .js-ticket-data1 .js-row .js-col-md-6 {float: right;}
+.jsst-merge-popup-wrapper form .js-form-wrapper .js-merge-form-wrp {float: right;}
+.jsst-merge-popup-wrapper form .js-form-wrapper .js-merge-form-wrp .js-merge-form-value {float: right;margin-right: 0;margin-left: 5px;}
+.jsst-merge-popup-wrapper form .js-form-wrapper .js-merge-form-btn-wrp .js-merge-btn {float: right;margin-right: 0;margin-left: 5px;}
+.jsst-ticket-detail-timer-wrapper .timer-left {float: right;}
+.jsst-ticket-detail-timer-wrapper .timer-right {float: left;}
+.jsst-ticket-detail-timer-wrapper .timer {float: right;}
+.jsst-ticket-detail-timer-wrapper .timer-buttons .timer-button {float: right;}
+.js-det-tkt-form .js-form-wrapper .jsst-formfield-radio-button-wrap {float: right;margin-right: 0;margin-left: 5px;}
+.js-det-tkt-form .js-form-wrapper .js-form-value .js-admin-popup-select-field {background-position: 10px 15px;}
+
+/* ticket list */
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-pic {float: right;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data {padding-right: 15px;padding-left: 0;float: right;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data .js-ticket-left {float: right;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data .js-ticket-left .js-ticket-data-row .js-ticket-data-row-rec {float: right;margin-right: 0;margin-left: 30px;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data .js-ticket-left .js-ticket-data-row .js-ticket-title {margin-right: 0;margin-left: 5px;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data .js-ticket-right .js-ticket-priority {margin-left: 0;margin-right: 5px;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data1 {float: left;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data1 .js-ticket-data1-row {text-align: left;}
+.js-ticket-wrapper .js-ticket-toparea .js-ticket-data1 .js-ticket-data1-row .js-ticket-data1-title {margin-right: 0;margin-left: 5px;}
+.js-ticket-wrapper .js-ticket-bottom-data-part .js-ticket-datapart-buttons-action {float: right;}
+.js-ticket-wrapper .js-ticket-bottom-data-part .js-ticket-datapart-buttons-action .js-ticket-datapart-action-btn {margin-right: 0;margin-left: 5px;float: right;}
+.js-ticket-wrapper .js-ticket-bottom-data-part .js-ticket-datapart-buttons-action .js-ticket-datapart-action-btn img {margin-right: 0;margin-left: 3px;}
+
+/* ticket detail */
+.js-tkt-det-left {float: right;padding-right: 0;padding-left: 30px;}
+.js-tkt-det-user .js-tkt-det-user-image {float: right;}
+.js-tkt-det-user .js-tkt-det-user-cnt {padding-right: 10px;}
+.js-tkt-det-actn-btn-wrp .js-tkt-det-actn-btn {float: right;}
+.js-det-tkt-form .js-form-wrapper .js-tkt-det-perm-msg {float: right;margin-right: 0;margin-left: 5px;}
+.js-tkt-det-other-tkt .js-tkt-det-other-tkt-img {margin-left: 0;margin-right: 7px;}
+.js-add-signature {float: right;}
+.js-ticket-thread .js-ticket-thread-image {float: right;}
+.js-ticket-thread .js-ticket-thread-cnt {padding-right: 15px;}
+.js-ticket-thread .js-ticket-thread-cnt .js-ticket-thread-data .js-ticket-thread-person {float: right;}
+.js-ticket-thread .js-ticket-thread-cnt .js-ticket-thread-data .js-ticket-thread-time {float: left;margin-right: 10px;margin-left: 0;}
+.js-ticket-thread .js-ticket-thread-cnt-btm .js-ticket-thread-date {float: right;}
+.js-ticket-thread .js-ticket-thread-actions {float: left;}
+.js-ticket-thread-add-btn .js-ticket-thread-add-btn-link img {margin-right: 0;margin-left: 3px;}
+.js-ticket-thread .js-ticket-thread-cnt .js-ticket-thread-data .js-ticket-thread-email {float: right;}
+.js_ticketattachment .js_ticketattachment_fname {float: right;}
+div.js_ticketattachment a.button {float: left;}
+.js-tkt-det-hdg .js-tkt-det-hdg-txt {float: right;}
+.js-tkt-det-info-data .js-tkt-det-info-tit {float: right;margin-right: 0;margin-left: 8px;}
+.js-tkt-det-info-data .js-tkt-det-info-val {float: right;}
+.js-tkt-det-hdg .js-tkt-det-hdg-btn {float: left;}
+.js-tkt-det-trsfer-dep .js-tkt-det-trsfer-dep-txt {float: right;}
+.js-tkt-det-trsfer-dep .js-tkt-det-hdg-btn {float: left;text-align: left;}
+.js-tkt-det-timer-wrp .timer-total-time .timer-total-time-value .timer-box {float: right;margin-right: 0;margin-left: 15px;}
+.js-tkt-det-timer-wrp .timer-total-time .timer-total-time-value .timer-box:last-child {margin-left: 0;}
+.js-tkt-det-timer-wrp .timer-total-time .timer-total-time-value .timer-box::after {right: auto;left: -14px;}
+.js-tkt-det-user .js-tkt-det-user-cnt .js-tkt-det-user-data .js-tkt-det-user-tit {float: right;margin-left: 3px;}
+.js-tkt-det-usr-tkt-list .js-tkt-det-prty {float: right;margin-right: 0;margin-left: 3px;}
+.js-tkt-det-usr-tkt-list .js-tkt-det-status {float: right;}
+.js-tkt-wc-order-box .js-tkt-wc-order-item .js-tkt-wc-order-item-title {float: right;margin-right: 0;margin-left: 8px;}
+.js-tkt-wc-order-box .js-tkt-wc-order-item .js-tkt-wc-order-item-value {float: right;}
+
+/* reports */
+.js-admin-staff-cnt {float: right;}
+.js-admin-staff-cnt .js-report-staff-image {float: right;}
+.js-admin-staff-cnt .js-report-staff-cnt {padding-right: 10px;}
+table.js-admin-report-tickets .js-admin-staff-cnt .js-report-staff-cnt {padding-right: 10px;}
+.statifacetion-report-left {float: right;}
+.satisfaction-report-right {float: left;}
+.jsst-statifacetion-report-wrapper .jsst-satisfaction-report-bottom .indi-stats {margin-right: 0;margin-left: 10px;}
+.jsst-statifacetion-report-wrapper .jsst-satisfaction-report-bottom .indi-stats img {float: right;}
+.jsst-statifacetion-report-wrapper .jsst-satisfaction-report-bottom .indi-stats .stats-percentage {padding-left: 0;padding-right: 10%;text-align: right;}
+.jsst-statifacetion-report-wrapper .jsst-satisfaction-report-bottom .indi-stats .stats-text {padding-left: 0;padding-right: 10%;text-align: right;}
+.js-admin-report.halfwidth:nth-child(2n+1) {float: right;margin-right: 0;margin-left: 7px;}
+.js-admin-report.halfwidth:nth-child(2n) {float: right;margin-right: 7px;margin-left: 0;}
+
+/* add-ons list */
+div.jsst-addon-installer-wrapper div.jsst-addon-installer-left-section-wrap {float: right;}
+.jsstadmin-add-on-page-wrp .add-on-page-cnt .add-on-msg .add-on-msg-txt {float: right;}
+.jsstadmin-add-on-page-wrp .add-on-page-cnt .add-on-msg .add-on-msg-btn {float: left;}
+.jsstadmin-add-on-page-wrp .add-on-page-cnt .add-on-list .add-on-item {float: right;}
+.jsstadmin-add-on-page-wrp .add-on-page-cnt .add-on-bundle-pack-list .add-on-bundle-pack-item {float: right;}
+
+/* feedbacks */
+.js-ticket-feedback-image {float: left;}
+.js-ticket-feedback-msg .js-ticket-feedback-msg-title {float: right;margin-right: 0;margin-left: 5px;}
+.js-ticket-feedback-msg .js-ticket-feedback-msg-val {float: right;}
+
+/* roles */
+#tk_form_wraper .js-form-wrapper {float: right;}
+.tk_permission_heading .tk_permission_heading_text {float: right;}
+.tk_permission_heading .tk_permission_heading_sd_select {text-align: left;}
+.tk_permission_task_wraper .tk_permission_task_data {float: right;margin-left: 0;margin-right: 5px;}
+.tk_permission_task_data input {margin-right: 10px;margin-left: 3px;}
+
+/* system emails */
+span#js-systemail.js-admin-infotitle img {margin-right: 0;margin-left: 3px;}
+.js-admin-content-button .js-add-link {float: right;margin-right: 0;margin-left: 3px;}
+.js-admin-content-button .js-add-link img {margin-right: 0;margin-left: 3px;}
+.js-ticket-thread-upperpart .js-ticket-thread-top span {float: right;margin-right: 0;margin-left: 5px;}
+.js-ticket-thread-upperpart .js-ticket-thread-middlepart .js-ticket-thread-title {float: right;margin-right: 0;margin-left: 5px;}
+.js-ticket-thread-upperpart .js-ticket-thread-middlepart .js-ticket-thread-msg {float: right;}
+.js-ticket-thread-reply .js-ticket-thread-pic {float: right;}
+
+/* email templates */
+.js-email-menu {float: right;}
+
+
+/*responsive*/
+@media (max-width:767px) {
+    
+    /* dashboard */
+    #jsreview-banner .review .lower {right: auto;left: 26%;text-align: center;}
+    
+    /* tables */
+    #js-support-ticket-table tbody tr td::before {margin-right: 0;margin-left: 20px;}
+    table#js-support-ticket-table tr th, table#js-support-ticket-table tr td {text-align: right;border: 0;}
+}
+@media (max-width:650px) {
+    
+    /* dashboard */
+    #jsstadmin-head .jsstadmin-add-link {float: right;}
+    #jsreview-banner .review .lower {left: 0px;}
+    .js-ticket-wrapper .js-ticket-toparea .js-ticket-data .js-ticket-right {text-align: right;}
+    .js-ticket-wrapper .js-ticket-toparea .js-ticket-data1 .js-ticket-data1-row {text-align: right;}
+    .jsst-ticket-detail-timer-wrapper .timer-right {float: right;}
+
+    /* addon list */
+    .jsstadmin-add-on-page-wrp .add-on-page-cnt .add-on-msg .add-on-msg-btn {float: right;}
+
+}
+@media (max-width:480px) {
+    
+    /* reports */
+    .satisfaction-report-right {float: right;}
+}   

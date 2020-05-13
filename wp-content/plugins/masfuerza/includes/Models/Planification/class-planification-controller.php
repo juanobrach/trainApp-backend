@@ -83,11 +83,11 @@ class Planification extends Controller{
                 'actualWeek'=> $actual_week,
                 'completedWeeks'=> $completed_weeks
             );
-
+            $routinesName = array('A', 'B','C','D','E','F','G');
             $routines[$routine] = array(
                 'id'=> $routine,
-                'name'=>'',
-                'daysPerWeek'=> $routine_days_per_week,
+                'name'=>$routinesName[$routine],
+                'daysPerWeek'=> (int)$routine_days_per_week,
                 'warmupId' => $heating_id,
                 'warmUpName'=> $heating_data['title'],
                 'totalExercises'=> $workouts_amount,
@@ -98,14 +98,46 @@ class Planification extends Controller{
 
             // Workouts
             for( $workout = 0; $workout < $workouts_amount; $workout++  ){
-                $super_workout_id = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_super_serie'][0] )[0];
-                $super_workout_data = $this->get_data( 'exercise', $super_workout_id );
+                if( is_serialized($data['routines_planification_'.$routine.'_workouts_'.$workout.'_super_serie']) ){
 
-                $workout_id = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_workout'][0]);
-                $workout_data = $this->get_data( 'exercise', $workout_id );
+                }
+                $super_workout_id = maybe_unserialize( [0] )[0];
+                
+
+                $super_workout_id = 0;
+                if( is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_super_serie'][0] ) ){
+                    $super_workout_id = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_super_serie'][0])[0];                    
+                }else{
+                    $super_workout_id = $data['routines_planification_'.$routine.'_workouts_'.$workout.'_super_serie'][0];
+                }
+
+
+                $super_workout_data = array();
+
+                if( $super_workout_id > 0 ){
+                    $super_workout_data = $this->get_data( 'exercise', $super_workout_id );
+                }
+
+                
+
+
+                
+                $workout_id = 0;
+                if( is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_workout'][0] ) ){
+                    $workout_id = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_workout'][0])[0];
+                }else{
+                    $workout_id = $data['routines_planification_'.$routine.'_workouts_'.$workout.'_workout'][0];
+
+                }
+
+                $workout_data = array();
+                if((int) $workout_id > 1 ){
+                    $workout_data = $this->get_data( 'exercise', $workout_id );
+                    
+                }
+
                 $note = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_note'][0]);
-
-                $dosage = array();
+                $dosage_id =  maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
 
                 $min_weeks = 4;
                 $dosings = array();
@@ -127,9 +159,9 @@ class Planification extends Controller{
                     $weeks[] = $week_data;
                 }
                 
-                $exercise_name = get_the_title($workout_id);
-                $super_workout_name = get_the_title($workout_id);
-
+                $exercise_name = $workout_data['name'][0];
+                $super_workout_name = $super_workout_data['name'][0];
+                $dosings['id'] = $dosage_id;
                 $dosings['weeks'] = $weeks;
                 $routines[$routine]['exercises'][] = array(
                     'exerciseId'=>  (int)$workout_id,
@@ -142,6 +174,8 @@ class Planification extends Controller{
 
             }
         }
+
+        
         $planification = array(
             'id'=> $id,
             'athleteId' => $athlete_id,
@@ -150,8 +184,9 @@ class Planification extends Controller{
             'trainerId' => $author_id,
             // 'routines_amount'=> $routines_amount,
             'routines'=> $routines,
-            'active'=> $data['active'][0],
-            'finished'=> $data['finished'][0]
+            'active'=> (bool)$data['planification_active'][0],
+            'finished'=> (bool)$data['planification_finished'][0],
+            'sku' => $data['sku'][0]
         );
         return $planification;
     }
@@ -199,7 +234,7 @@ class Planification extends Controller{
             foreach( $routines_data['exercises'] as $exercise_data ){
                 
                 $dosings = $exercise_data['dosings'];
-                
+                $dosage['id'] = $dosings['id'];
                 foreach($dosings['weeks'] as $key => $week){
                     
                     foreach ($week['days'] as $key_week => $day) {
@@ -234,7 +269,7 @@ class Planification extends Controller{
 
             $routines[] = array(
                 'id'=> $routines_data['id'],
-                'days_per_week' => $routines_data['daysPerWeek'],
+                'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
                 'progress'=> array( $progress )
@@ -267,6 +302,7 @@ class Planification extends Controller{
     public function update_planification($new_planification, $planification_id ){
         // Update Routine
 
+        
         $planification = $this->map_planification_fields($new_planification);
 
         // print_r($planification);die;
@@ -276,14 +312,17 @@ class Planification extends Controller{
         $routines = $planification['routines'];
 
 
-        
-
+        $planification_post = array(
+            'ID'           => $planification_id,
+            'post_title'   => $new_planification['name']
+        );
+        wp_update_post($planification_post);
         
         
         
 
         delete_field('routines_planification', $planification_id);
-        
+
 
         if( have_rows('routines_planification', $planification_id) ){
 
@@ -486,7 +525,6 @@ class Planification extends Controller{
         $days_counted += $new_routine['days_per_week'];
         
         if($days_counted > 6 ){
-            echo "counted: $days_counted";
             return true;
         }else{
             return false;
@@ -527,7 +565,7 @@ class Planification extends Controller{
             }
 
             $routines[] = array(
-                'days_per_week'=> $routine['daysPerWeek'],
+                'days_per_week'=> (int)$routine['daysPerWeek'],
                 'heating'=> $routine['warmUpId'],
                 'workouts' => $workouts,
                 'progress'=>array(
@@ -559,12 +597,12 @@ class Planification extends Controller{
     public function create_planification($planification){
         $Program = new Program();
         
-        $name = $planification['name'];        
+        $name = $planification['sku'];        
         $trainerId = $planification['trainerId'];
         $athlete_id = $planification['athleteId'];
 
         $program_sku = $planification['programSku'];
-        
+        $sku = $planification['sku'];
     
         $program_id = $Program->get_program_id($program_sku);
         
@@ -604,7 +642,7 @@ class Planification extends Controller{
         update_field('athlete', $athlete_id, $planification_id);
         update_field('program',$program_id, $planification_id);
         update_field('planification_active', true, $planification_id);
-
+        update_field('sku', $sku, $planification_id);
 
         // Add athlete to program
         $assigned_athletes =  get_field('athletes', $program_id);

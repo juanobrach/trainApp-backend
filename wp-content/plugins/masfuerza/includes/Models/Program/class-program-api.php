@@ -118,7 +118,7 @@ class ProgramAPI {
 
     public function handle_delete_program($data){
         $data =  json_decode ( $data->get_body() );
-        return $this->program->handle_delete_program($data->programId);
+        return $this->program->handle_delete_program($data->programSku);
     }
 
     public function handle_assing_athlete($request){

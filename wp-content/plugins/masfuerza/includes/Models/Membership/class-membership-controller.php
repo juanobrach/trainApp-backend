@@ -61,11 +61,20 @@ class Membership extends Controller{
                 $planifications_actives = $this->Planification->get_active_planifications_by_trainer_id($trainer_id);
                 $asigned = $planifications_actives;
             
+                $is_active = ($subscription_data->status === 'active' ? true : false);
+
+                
+                // Return days left in negative, positive numbers represent exceded membership.
+                $to   = strtotime( $subscription_data->schedule_next_payment->date );
+                $NewDate = date('M j, Y', $to);                
+                $diff = date_diff( date_create($NewDate),date_create(date("M j, Y")));
+                $days_left = $diff->format('%r%a');
 
                 $subscription = array(
-                    'active'=> $subscription_data->status,
+                    'active'=> $is_active,
                     'from' => $subscription_data->date_created->date,
                     'to' =>  $subscription_data->schedule_next_payment->date,
+                    'daysLeft' => $days_left,
                     'woocommerceId'=> $subscription_data->id,
                     'paymentInformation'=> array(
                         'method'=> $subscription_data->payment_method,

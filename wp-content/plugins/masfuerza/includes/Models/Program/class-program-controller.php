@@ -453,6 +453,13 @@ class Program extends Controller{
         update_field('name', $new_data['name'], $program_id);
         update_field('sku', $new_data['sku'], $program_id);
 
+        $program_post= array(
+            'ID'           => $program_id,
+            'post_title'   =>  $new_data['name'],
+        );
+       
+      // Update the post into the database
+        wp_update_post( $program_post );
 
         // Chef if new athlete on program. Then create a planification.
         $athletes = get_field('athletes', $program_id);
@@ -645,17 +652,17 @@ class Program extends Controller{
 
 
 
-    public function handle_delete_program($program_id){
-        $program = $this->delete_program( $program_id );
+    public function handle_delete_program($program_sku){
+        $program = $this->delete_program( $program_sku );
         return $program;
     }
 
-    public function delete_program($program_id){
-        // delete_row( 'routines_0_workouts_0_workout', 1 ,$program_id);
+    public function delete_program($program_sku){
+        $program_id = $this->get_program_id($program_sku);
         $program = wp_delete_post($program_id);
 
         if( $program ){
-            return $program_id;
+            return $program_sku;
         }else{
             return false;
         }
