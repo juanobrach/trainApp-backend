@@ -1,6 +1,0 @@
-{
-    "require": {
-        "firebase/php-jwt": "^5.0",
-        "automattic/woocommerce": "^3.0"
-    }
-}
