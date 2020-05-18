@@ -19,3 +19,4 @@ node_modules/
 *.sql
 *.sqlite
 wp-config.php
+.htaccess
