@@ -12,6 +12,7 @@ class AuthAPI {
             'methods' => 'POST',
             'callback' => array($this, 'Login'),
         ));
+
     }
 
     public function Login($credentials){        

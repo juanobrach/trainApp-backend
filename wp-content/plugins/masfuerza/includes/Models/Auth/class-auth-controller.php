@@ -5,6 +5,7 @@ use \Firebase\JWT\JWT;
 class Auth extends Controller{
 
     public function __construct(){ 
+        $this->Ticket = new Ticket();
     }
 
     public function Login($credentials){
@@ -51,7 +52,6 @@ class Auth extends Controller{
                 'email' => $user_data->user_email,
                 'roles' => $user_data->roles
             );
-
 
             return $user;
             

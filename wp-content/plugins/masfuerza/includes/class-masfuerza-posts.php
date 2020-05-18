@@ -134,12 +134,18 @@ class Masfuerza_Posts {
 	 *  athlete.
 	 */
 	public function registration_save( $user_id ) {
-		$user_meta=get_userdata($user_id);
-		$user_roles=$user_meta->roles;
+		
+		$user_data=get_userdata($user_id);
+		
+		
+		$user_roles=$user_data->roles;
 		if( in_array('atleta', $user_roles) ){
 			if ( isset( $_POST['first_name'] ) )
 				update_user_meta($user_id, 'trainer', wp_get_current_user()->data->ID  );
 		}
+		
+ 
 	}
+
 
 }

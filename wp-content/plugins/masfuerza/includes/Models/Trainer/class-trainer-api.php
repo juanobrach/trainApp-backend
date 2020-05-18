@@ -18,8 +18,10 @@ class TrainerAPI {
 
     public function handle_get_trainer_data($request){
        $data = json_decode ( $request->get_body() );
-       $trainer_id = $data->trainer_id;       
-       return $this->trainer->get_trainer_data($trainer_id);
+       $trainer_id = $data->trainer_id;
+       $username = $data->username;
+       $password = $data->password;       
+       return $this->trainer->get_trainer_data($trainer_id, $username, $password);
     }
     
 }

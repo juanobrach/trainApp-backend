@@ -64,9 +64,15 @@ class Planification extends Controller{
 
             $workouts_amount = $data['routines_planification_'.$routine.'_workouts'][0];
             $routine_days_per_week = $data['routines_planification_'.$routine.'_days_per_week'][0];
-            $heating_id = maybe_unserialize( $data['routines_planification_'.$routine.'_heating'][0] )[0];
+            if( is_serialized( $data['routines_planification_'.$routine.'_heating'][0] )){
+                $heating_id = (int)maybe_unserialize( $data['routines_planification_'.$routine.'_heating'][0] )[0];
+            }else{
+                $heating_id = (int)$data['routines_planification_'.$routine.'_heating'][0];
+            }
+            
             $heating_data = $this->get_data('heating',$heating_id);
 
+            
             $completed_days = $data['routines_planification_'.$routine.'_progress_0_completed_days'][0];
             $actual_day = $data['routines_planification_'.$routine.'_progress_0_actual_day'][0];
             $next_day = $data['routines_planification_'.$routine.'_progress_0_next_day'][0];
@@ -88,7 +94,7 @@ class Planification extends Controller{
                 'id'=> $routine,
                 'name'=>$routinesName[$routine],
                 'daysPerWeek'=> (int)$routine_days_per_week,
-                'warmupId' => $heating_id,
+                'warmUpId' => $heating_id,
                 'warmUpName'=> $heating_data['title'],
                 'totalExercises'=> $workouts_amount,
                 'progress'=>  $progress,
@@ -137,7 +143,11 @@ class Planification extends Controller{
                 }
 
                 $note = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_note'][0]);
-                $dosage_id =  maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
+                if(is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0] )){
+                    $dosage_id = (int) maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
+                }else{
+                    $dosage_id = (int)$data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0];
+                }
 
                 $min_weeks = 4;
                 $dosings = array();
@@ -158,14 +168,17 @@ class Planification extends Controller{
                     }
                     $weeks[] = $week_data;
                 }
-                
                 $exercise_name = $workout_data['name'][0];
                 $super_workout_name = $super_workout_data['name'][0];
+                
+                $dosage_data = $this->get_data( 'dosing', $dosage_id );
+                
                 $dosings['id'] = $dosage_id;
+                $dosings['name'] = $dosage_data['title'];
                 $dosings['weeks'] = $weeks;
                 $routines[$routine]['exercises'][] = array(
-                    'exerciseId'=>  (int)$workout_id,
-                    'exerciseName'=> $exercise_name,
+                    'id'=>  (int)$workout_id,
+                    'name'=> $exercise_name,
                     'superExerciseId' => $super_workout_id,
                     'superExerciseName'=> $super_workout_name,
                     'note'=>$note,
@@ -222,17 +235,16 @@ class Planification extends Controller{
     // }
 
     public function map_planification_fields($planification_data){        
-        
         $routines = array();
 
         foreach($planification_data['routines'] as $routines_data ){
-                    
+                                
             $workouts = array();
 
             // For each workout
-            $dosage = array();
             foreach( $routines_data['exercises'] as $exercise_data ){
                 
+                $dosage = array();
                 $dosings = $exercise_data['dosings'];
                 $dosage['id'] = $dosings['id'];
                 foreach($dosings['weeks'] as $key => $week){
@@ -251,7 +263,7 @@ class Planification extends Controller{
 
 
                 $workouts[] = array(
-                    'workout'=>(int) $exercise_data['exerciseId'],
+                    'workout'=>(int) $exercise_data['id'],
                     'dosage' => array( $dosage ),
                     'super_serie' => $exercise_data['superExerciseId'],
                     'note' => $exercise_data['note']
@@ -614,6 +626,8 @@ class Planification extends Controller{
         $planification_data =  $this->map_planification_fields($planification);
         $routines = $planification_data['routines'];
 
+        print_r($routines);die;
+        
         if ( empty( $program_sku ) ) {
             $error = new WP_Error( '001', 'No es posible crear una planificacion sin el SKU de un programa', 'Some information' );
             return wp_send_json_error($error);
