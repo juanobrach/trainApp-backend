@@ -626,7 +626,6 @@ class Planification extends Controller{
         $planification_data =  $this->map_planification_fields($planification);
         $routines = $planification_data['routines'];
 
-        print_r($routines);die;
         
         if ( empty( $program_sku ) ) {
             $error = new WP_Error( '001', 'No es posible crear una planificacion sin el SKU de un programa', 'Some information' );
