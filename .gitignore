@@ -1,11 +1,15 @@
 # ignore everything in the "wp-content" directory, except:
 # "mu-plugins", "plugins", "themes" directory
+
 wp-content/*
-!wp-content/plugins/masfuerza
+!wp-content/plugins/
 !wp-content/themes/
 
-# ignore these plugins
-wp-content/plugins/hello.php
+wp-content/plugins/*
+!wp-content/plugins/masfuerza/
+
+
+
 
 # ignore specific themes
 wp-content/themes/twenty*/
