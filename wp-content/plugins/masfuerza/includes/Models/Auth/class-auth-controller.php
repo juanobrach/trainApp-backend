@@ -78,7 +78,7 @@ class Auth extends Controller{
                     );
                     
                     
-                    $support_token = $this->Ticket->create_support_credentials($credentials, $data['user_id']);
+                    $support_token = $this->Ticket->create_support_credentials($credentials, $user->data->ID);
                     $support_auth_user = $support_token['authUser'];
                     $support_auth_token = $support_token['authToken'];
                     

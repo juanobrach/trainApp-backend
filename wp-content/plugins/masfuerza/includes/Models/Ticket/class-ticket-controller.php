@@ -292,11 +292,13 @@ class Ticket extends Controller{
         $response = json_decode( $response['body'] );     
         update_user_meta( (int)$user_id, 'support_auth_user', $response->auth_user  );
         update_user_meta( (int)$user_id, 'support_auth_token', $response->auth_token);
-               
+        
         $credentials = array(
             'authUser'=> $response->auth_user,
             'authToken'=> $response->auth_token
         );
+
+        
 
         
         return $credentials;
