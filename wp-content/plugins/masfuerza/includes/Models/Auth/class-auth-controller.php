@@ -69,7 +69,7 @@ class Auth extends Controller{
                 $support_auth_token =  get_user_meta($data['user_id'],'support_auth_token', true);
         
                 
-                if($support_credentials === "" || $support_auth_token === ""  ){
+                if($support_credentials === false || $support_auth_token === false  ){
                     
                     $credentials  = array(
                         'username'=> $data['username'],
