@@ -210,13 +210,14 @@ class Ticket extends Controller{
 	 * @params [ user_id, user_password, support_plugin_token ]
 	 * @return (string|string)[ auth_user, auth_token ]
 	 */
-	private function create_support_credentials( $credentials, $user_id = null ){
+	public function create_support_credentials( $credentials, $user_id = null ){
 		
 		$support_credentials = array(
 			'auth_user' => '',
 			'auth_token' => ''
 		);
 
+        
 		$credentials = $this->get_support_token($credentials, $user_id);
 		return $credentials;
 
