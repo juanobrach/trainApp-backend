@@ -217,8 +217,7 @@ class Ticket extends Controller{
 			'auth_token' => ''
 		);
 
-		$Ticket = new Ticket();
-		$credentials = $Ticket->get_support_token($credentials, $user_id);
+		$credentials = $this->get_support_token($credentials, $user_id);
 		return $credentials;
 
 	}
