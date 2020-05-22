@@ -15,7 +15,7 @@ class Trainer extends Controller {
      * See (trainer.ts) model inside front/app
      * 
      *  */
-    public function get_trainer_data($trainer_id, $username, $password){
+    public function get_trainer_data($trainer_id){
 
         $Planification = new Planification(); 
         $athlete;
@@ -25,16 +25,8 @@ class Trainer extends Controller {
         $athletes   = $this->Athlete->get_athletes_by_trainer($trainer_id);
         $programs   = $this->Program->get_programs();
         $membership = $this->Membership->get_subscription_by_trainer_id($trainer_id);
-        $planifications = $Planification->get_planifications_by_trainer_id($trainer_id);
-
-        $user_credentials = array(
-            'user_id' => $trainer_id,
-            'username' => $username,
-            'password'=> $password
-        );
-
-        
-        $tickets = $this->Ticket->get_tickets($user_credentials);
+        $planifications = $Planification->get_planifications_by_trainer_id($trainer_id);        
+        $tickets = $this->Ticket->get_tickets($trainer_id);
 
     
         return array(
@@ -42,7 +34,10 @@ class Trainer extends Controller {
             'programs'=> $programs,
             'membership'=> $membership,
             'planifications'=> $planifications,
-            'tickets'=> $tickets
+            'support'=> array(
+                'loading'=> false,
+                'tickets'=> $tickets
+            )
         );
     }
 

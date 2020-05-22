@@ -23,7 +23,6 @@ class Program extends Controller{
 
         $search_results = get_posts($args);
 
-
         $programs = array();
         foreach( $search_results as $program ){
             $routines = array();
@@ -90,7 +89,6 @@ class Program extends Controller{
                     }else{
                         $dosage_id = $data['routines_'.$routine.'_workouts_'.$workout.'_dosage'][0];
                     }
-
 
                     $dosage_data = $this->dosing->get_dosing( $dosage_id);
                     $routines[$routine]['exercises'][] = array(

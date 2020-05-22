@@ -64,6 +64,26 @@ class Auth extends Controller{
                 $user_meta = get_user_meta($user->data->ID);
                 $user_data = get_userdata( $user->data->ID );
                 
+
+                $support_auth_user =  get_user_meta($data['user_id'],'support_auth_user', true);
+                $support_auth_token =  get_user_meta($data['user_id'],'support_auth_token', true);
+        
+                
+                if($support_credentials === "" || $support_auth_token === ""  ){
+                    
+                    $credentials  = array(
+                        'username'=> $data['username'],
+                        'password'=> $data['password'],
+                        'secret_key'=> '5ebc434032a155ebc434032a17'
+                    );
+            
+                    $support_token = $this->create_support_credentials($credentials, $data['user_id']);
+                    $support_auth_user = $support_token['authUser'];
+                    $support_auth_token = $support_token['authToken'];
+                    
+                }
+
+
                 //$token = $user->data->token;
                 //$valid_token = $this->validate_token($token);
                 //if( $valid_token === false  ) return false;
@@ -71,6 +91,10 @@ class Auth extends Controller{
                 $user = array(
                     'ID' => $user->data->ID,
                   //  'token' => $token,
+                    'support' => array(
+                        'auth_user'=> $support_auth_user,
+                        'auth_token'=> $support_auth_token
+                    ),
                     'first_name' => $user_meta['first_name'][0],
                     'last_name' => $user_meta['last_name'][0],
                     'username' => $user->data->user_nicename,

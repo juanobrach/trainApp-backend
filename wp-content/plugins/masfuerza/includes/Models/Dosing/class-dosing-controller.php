@@ -52,7 +52,7 @@ class Dosing extends Controller{
 
     public function get_dosing($dosage_id){
         $data = array();
-        $search_results = get_posts(array( 'post_type'=> 'dosing', 'post__in'=> array($dosage_id)));
+        $search_results = get_posts(array(  'posts_per_page'   => -1, 'post_type'=> 'dosing', 'post__in'=> array($dosage_id)));
 
         foreach( $search_results as $dosing ){
             $dosage_id = $dosing->ID;
