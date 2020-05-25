@@ -91,7 +91,7 @@ class Ticket extends Controller{
             'subject' => $ticket['ticket_subject'],
             'message' => $ticket['ticket_description'],
             'status' => array(
-                'id'=> $ticket['ticket_status'],
+                'id'=> (int)$ticket['ticket_status'],
                 'message'=> $statues[$ticket['ticket_status']],
             ),
             // 'thread' => $thread
@@ -152,7 +152,7 @@ class Ticket extends Controller{
                 'updated' => $ticket['date_updated'],
                 'message' => $ticket['ticket_description'],
                 'status' => array(
-                    'id'=> $ticket['ticket_status'],
+                    'id'=> (int)$ticket['ticket_status'],
                     'message'=> $statues[$ticket['ticket_status']],
                 ),
                 // 'thread' => $thread
