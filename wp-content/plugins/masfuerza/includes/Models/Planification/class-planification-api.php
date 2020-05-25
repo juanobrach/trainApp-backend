@@ -19,6 +19,12 @@ class PlanificationAPI {
             'methods' => 'GET',
             'callback' => array($this, 'get_planification_by_id'),
         ));
+
+        register_rest_route( 'masfuerza/v1', '/planification/get_planification_by_sku', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_get_planification_by_sku'),
+        ));
+
         
         register_rest_route( 'masfuerza/v1', '/planifications/author/(?P<id>\d+)', array(
             'methods' => 'GET',
@@ -120,6 +126,13 @@ class PlanificationAPI {
         $data =  $request->get_json_params();        
         $this->planification->update_planification($data["data"], (int)$data["id"]);
     }
+
+    public function handle_get_planification_by_sku($request){
+        $data =  $request->get_json_params();        
+        return $this->planification->get_planification_by_sku($data["sku"]);
+    }
+
+    
 
     public function handle_create_routine($data){
         $this->planification->handle_create_routine($data);

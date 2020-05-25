@@ -136,6 +136,8 @@ class Masfuerza {
 
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-masfuerza-api.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Controllers/class-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-masfuerza-cron.php';
+
 		
 		/**
 		 * INCLUDE ALL MODELS WITH THEIR CONTROLLERS
@@ -225,6 +227,7 @@ class Masfuerza {
 		$plugin_admin = new Masfuerza_Admin( $this->get_plugin_name(), $this->get_version() );
 		$masFuerza_posts = new Masfuerza_Posts();
 		$masFuerza_api   = new Masfuerza_Api();
+		$masFuerza_cron = new Masfuerza_Cron();
 
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
@@ -237,6 +240,7 @@ class Masfuerza {
 				
 
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'add_role_caps', 9999 );
+		$this->loader->add_action( 'cron_routines_progress', $masFuerza_cron , 'routines_progress');
 
 
 
