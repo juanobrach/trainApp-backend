@@ -348,7 +348,8 @@ class Planification extends Controller{
                 'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
-                'progress'=> array( $progress )
+                'progress'=> array( $progress ),
+                'active' => ($routines_data['active'] === true ? 1 : 0)
             );
             
         }
