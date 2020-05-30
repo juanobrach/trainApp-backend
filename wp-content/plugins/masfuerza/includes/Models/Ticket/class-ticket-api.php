@@ -38,8 +38,8 @@ class TicketAPI {
 
 
     public function handle_get_tickets($request){
-        $data = json_decode ( $request->get_body() );
-        $user_id = $data->user_id;                
+        $data = json_decode ( $request->get_body() );        
+        $user_id = $data->userId;                
         return $this->ticket->get_tickets($user_id);
     }
 

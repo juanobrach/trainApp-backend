@@ -108,9 +108,8 @@ class Ticket extends Controller{
 
     public function get_tickets($user_id){
 
-        $support_auth_user =  get_user_meta($user_id,'support_auth_user', true);
-        $support_auth_token =  get_user_meta($user_id,'support_auth_token', true);
-        
+        $support_auth_user =  get_user_meta((int) $user_id,'support_auth_user', true);
+        $support_auth_token =  get_user_meta( (int)$user_id,'support_auth_token', true);
         $statues = array();
         $statues[38] = "En proceso";
         $statues[39] = "En espera de la respuesta del cliente";
