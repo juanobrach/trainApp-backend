@@ -50,6 +50,33 @@ class Athlete extends Controller{
                 $u->remove_role( 'subscriber' );
                 $u->remove_role( 'director' );
         
+                
+                
+                
+                $file_path = dirname( dirname( dirname( dirname(__FILE__)))) .'/mails/welcome/welcome.html';
+
+                $template = file_get_contents( $file_path );
+        
+                $variables = array();
+                $variables['athlete_name'] = $data->athlete->firstName;
+                $variables['trainer_name'] = "Roman Gorosito";
+                $variables['user_name'] =  $data->athlete->username;
+                $variables['password'] = $data->athlete->mobile;
+        
+                foreach($variables as $key => $value)
+                {
+                    $template = str_replace('{{'.$key.'}}', $value, $template);
+                }
+        
+                
+                $to = $data->athlete->email;
+                $subject = 'Bienvenido a TrainApp';
+                $headers = array('Content-Type: text/html; charset=UTF-8');
+                
+                $mail = wp_mail( $to, $subject, $template, $headers );
+
+
+
                 $athlete = $this->get_athlete_by_id($user_id); 
                 return $athlete;
                 
