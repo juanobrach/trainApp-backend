@@ -26,7 +26,8 @@ class Trainer extends Controller {
         $programs   = $this->Program->get_programs();
         $membership = $this->Membership->get_subscription_by_trainer_id($trainer_id);
         $planifications = $Planification->get_planifications_by_trainer_id($trainer_id);        
-        $tickets = $this->Ticket->get_tickets($trainer_id);
+        // TODO: tickets use a lot of space on localStorage. Use indexdb instead or capacitor LocalForage.
+        // $tickets = $this->Ticket->get_tickets($trainer_id);
 
     
         return array(
@@ -34,10 +35,10 @@ class Trainer extends Controller {
             'programs'=> $programs,
             'membership'=> $membership,
             'planifications'=> $planifications,
-            'support'=> array(
-                'loading'=> false,
-                'tickets'=> $tickets
-            )
+            // 'support'=> array(
+            //     'loading'=> false,
+            //     'tickets'=> $tickets
+            // )
         );
     }
 
