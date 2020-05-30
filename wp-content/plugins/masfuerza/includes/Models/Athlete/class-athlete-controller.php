@@ -61,7 +61,7 @@ class Athlete extends Controller{
                 $variables['athlete_name'] = $data->athlete->firstName;
                 $variables['trainer_name'] = "Roman Gorosito";
                 $variables['user_name'] =  $data->athlete->username;
-                $variables['password'] = $data->athlete->mobile;
+                $variables['password'] = $data->athlete->phone;
         
                 foreach($variables as $key => $value)
                 {
