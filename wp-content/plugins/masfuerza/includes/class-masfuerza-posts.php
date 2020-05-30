@@ -27,6 +27,21 @@
 class Masfuerza_Posts {
 
 
+
+	public function on_edit_post( $post ) {
+		$screen = get_current_screen();
+		
+		if (! empty($_GET['post']) )
+		{
+			$post = get_post($_GET['post']);			
+			if (! empty($post->post_content) )
+			{
+				update_field('name', $post->post_title, $post->ID);
+			}
+		}
+
+	} 
+
 	/**
 	 * Hook when post is saved and save the field "name" as a WP title
 	 *
@@ -65,6 +80,8 @@ class Masfuerza_Posts {
 				$data['post_title'] = $title;
 				$data['post_name']  = sanitize_title( $title );
 
+				
+
 				// Set a category from custom category field
 				$category = get_field('category', $post_id);
 				if( !empty( (array) $category) ){
@@ -78,6 +95,12 @@ class Masfuerza_Posts {
 				date_default_timezone_set('America/Argentina/Buenos_Aires');
 				$today = date('m/d/Y h:i:s a', time());
 				$title = $user_nickname ."  #". $today;
+				$data['post_title'] = $title;
+				$data['post_name']  = sanitize_title( $title );
+				wp_update_post( $data );
+			break;
+			case 'program':
+				$title              = get_field( 'name', $post_id ); 
 				$data['post_title'] = $title;
 				$data['post_name']  = sanitize_title( $title );
 				wp_update_post( $data );
@@ -106,13 +129,23 @@ class Masfuerza_Posts {
 		return $args;
 	}
 
+	/**
+	 *  Asign athlete creted to the current user logged in. It should a trainer createing a new user as their
+	 *  athlete.
+	 */
 	public function registration_save( $user_id ) {
-		$user_meta=get_userdata($user_id);
-		$user_roles=$user_meta->roles;
+		
+		$user_data=get_userdata($user_id);
+		
+		
+		$user_roles=$user_data->roles;
 		if( in_array('atleta', $user_roles) ){
 			if ( isset( $_POST['first_name'] ) )
 				update_user_meta($user_id, 'trainer', wp_get_current_user()->data->ID  );
 		}
+		
+ 
 	}
+
 
 }

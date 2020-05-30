@@ -100,4 +100,15 @@ class Masfuerza_Admin {
 
 	}
 
+	public function add_role_caps() {
+
+    $role = get_role('trainer');               
+    $role->add_cap( 'read_planification');
+    $role->add_cap( 'edit_planification' );
+    $role->add_cap( 'edit_planifications' );
+    $role->add_cap( 'edit_published_planifications' );
+    $role->add_cap( 'publish_planifications' );
+    $role->add_cap( 'delete_planification' );
+	}
+
 }

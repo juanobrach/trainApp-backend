@@ -136,6 +136,8 @@ class Masfuerza {
 
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-masfuerza-api.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Controllers/class-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-masfuerza-cron.php';
+
 		
 		/**
 		 * INCLUDE ALL MODELS WITH THEIR CONTROLLERS
@@ -145,6 +147,11 @@ class Masfuerza {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Planification/class-planification-controller.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Planification/class-planification-api.php';
 
+		// Program
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Program/class-program-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Program/class-program-api.php';
+
+	
 		// Dosing
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Dosing/class-dosing-controller.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Dosing/class-dosing-api.php';
@@ -161,10 +168,27 @@ class Masfuerza {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Auth/class-auth-controller.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Auth/class-auth-api.php';
 
+		// Auth
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Membership/class-membership-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Membership/class-membership-api.php';
+
 		// Subscription
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Subscription/class-subscription-controller.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Subscription/class-subscription-api.php';
 
+		// Athlete
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Athlete/class-athlete-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Athlete/class-athlete-api.php';
+
+		// Trainer
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Trainer/class-trainer-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Trainer/class-trainer-api.php';
+	
+		// Ticket
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Ticket/class-ticket-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Models/Ticket/class-ticket-api.php';
+
+		
 
 		// Helpers
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/Helpers/index.php';
@@ -203,13 +227,21 @@ class Masfuerza {
 		$plugin_admin = new Masfuerza_Admin( $this->get_plugin_name(), $this->get_version() );
 		$masFuerza_posts = new Masfuerza_Posts();
 		$masFuerza_api   = new Masfuerza_Api();
+		$masFuerza_cron = new Masfuerza_Cron();
 
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'load-post.php', $masFuerza_posts, 'on_edit_post');
+
 		$this->loader->add_action( 'acf/save_post', $masFuerza_posts, 'custom_type_save_post', 20 );
 		$this->loader->add_action( 'admin_head-post.php', $masFuerza_posts, 'check_for_notice' );
 		$this->loader->add_action( 'rest_api_init', $masFuerza_api, 'init_api' );
+				
+
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'add_role_caps', 9999 );
+		$this->loader->add_action( 'cron_routines_progress', $masFuerza_cron , 'routines_progress');
+
 
 
 
@@ -220,7 +252,7 @@ class Masfuerza {
 		$this->loader->add_action('user_register', $masFuerza_posts, 'registration_save', 10, 1);
 
 		// Filter JWT login
-		$this->loader->add_filter('jwt_auth_token_before_dispatch', $masFuerza_api, 'filter_jwt_auth', 10, 1);
+		//$this->loader->add_filter('jwt_auth_token_before_dispatch', $masFuerza_api, 'filter_jwt_auth', 10, 1);
 
 		// Enable the option show in rest
 		add_filter( 'acf/rest_api/field_settings/show_in_rest', '__return_true' );

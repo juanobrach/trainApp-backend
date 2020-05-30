@@ -1,6 +1,11 @@
 <?php
 
 class Controller {
+
+    public function __construct() {
+    }
+
+
     public function get_data($post_type, $post_id){
         $data = array();
         $search_results = get_posts(array( 'post_type'=> $post_type, 'post__in'=> array( $post_id )));

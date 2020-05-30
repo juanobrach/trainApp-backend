@@ -1,19 +1,5 @@
 <?php
 
-
-/**
- * Define the posts functionality
- *
- * Loads and defines the posts files for this plugin
- * so that it is ready for translation.
- *
- * @link       https://github.com/juanobrach
- * @since      1.0.0
- *
- * @package    Masfuerza
- * @subpackage Masfuerza/includes
- */
-
 /**
  * Define the API functionality.
  *
@@ -31,22 +17,52 @@ class Masfuerza_Api {
 	 * @since    1.0.0
 	 */
 	public function init_api( ) {
+		header("Access-Control-Allow-Origin: *"); 
+
 		$Auth_api = new AuthAPI();
-        $Planification_api = new PlanificationAPI();
-        $Dosing_api = new DosingAPI();
-        $Heating_api = new HeatingAPI();
+		$Planification_api = new PlanificationAPI();
+		$Program_api = new ProgramAPI();
+		$Dosing_api = new DosingAPI();
+		$Heating_api = new HeatingAPI();
 		$Exercise_api = new ExerciseAPI();
 		$Subscription_api = new SubscriptionAPI();
+		$Athlete_api = new AthleteAPI();
+		$Membership_api = new MembershipAPI();
+		$Trainer_api = new TrainerAPI();
+		$Ticket_api = new TicketAPI();
 
-      
 	}
 
+
 	/**
-	 *  Add roles into the login response
+	 * Filter JWT login to return user data based on the role. 
+	 * Add roles into the login response
 	 */
 	public function filter_jwt_auth($data){
-		$user = get_user_by('email', $data['user_email']); 
+		$user = get_user_by('email', $data['user_email']);  		
 		$data['roles'] =  $user->roles;
+		$data['ID'] = $user->ID;
+
+		foreach( $user->roles as $user_rol  ){
+			
+			if($user_rol === "trainer"){
+				// get data for trainer
+				$athletes = array();
+				$planifications = array();
+				$messages = array();
+				/**
+				 *  System data should return
+				 * 	Exercises, Heatings and Dosings
+				 */
+				$system_data = array();
+			}
+
+			if($user_rol === "athlete"){
+				// get data for athlete
+				$planifications = array();
+			}
+
+		}
 		return $data;
 	}
 

@@ -9,13 +9,14 @@ class AuthAPI {
 
     function init_routes(){
         register_rest_route( 'masfuerza/v1', '/login', array(
-            'methods' => 'GET',
-            'callback' => array($this, 'do_login'),
+            'methods' => 'POST',
+            'callback' => array($this, 'Login'),
         ));
-    }
 
-    public function do_login(){
-        return $this->auth->Login();
+    }
+    // TODO: if use again JWT change get_json_params to get body instead.
+    public function Login($credentials){        
+        return $this->auth->Login($credentials->get_json_params());
     }
 }
 

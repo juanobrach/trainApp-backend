@@ -17,6 +17,18 @@ class ExerciseAPI {
             'methods' => 'GET',
             'callback' => array($this, 'get_exercise')
         ));
+
+        register_rest_route( 'masfuerza/v1', '/exercises/categories', array(
+            'methods' => 'GET',
+            'callback' => array($this, 'get_exercise_categories')
+        ));
+    }
+
+
+    
+
+    public function get_exercise_categories(){
+        return $this->exercise->get_exercise_categories();
     }
 
     public function get_all_exercises(){
