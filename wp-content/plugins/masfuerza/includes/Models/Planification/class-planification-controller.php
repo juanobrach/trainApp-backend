@@ -106,7 +106,7 @@ class Planification extends Controller{
                 'warmUpName'=> $heating_data['title'],
                 'totalExercises'=> $workouts_amount,
                 'progress'=>  $progress,
-                'active'=>  $routine_active
+                'active'=>  ($routine_active === 1 ? true : false)
             );
 
 
