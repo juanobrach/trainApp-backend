@@ -39,7 +39,7 @@ class Masfuerza_Cron {
 
         // if( $routine['active'] === 1 ){          
 
-        if( $routine['active'] === 1 ){          
+        if( $routine['active'] === true ){          
           
           // Desactivate routine
           update_field( "routines_planification_".$routine['id']."_active", 0 ,  (int)$planification['id'] );
