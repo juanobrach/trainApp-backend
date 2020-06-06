@@ -20,6 +20,7 @@ class Exercise extends Controller{
         return $categories;        
 
     }
+
     public function get_all_exercises(){
         $data = array();
         $search_results = get_posts(array( 'post_type'=> 'exercise', "posts_per_page" =>  -1));
@@ -39,7 +40,14 @@ class Exercise extends Controller{
                 $images[] = wp_get_attachment_image_src( $image_id, 'normal' )[0];
             }
 
-            $video_url = maybe_unserialize( $excercise_meta['video'][0] );
+            $video_url = "";
+            if( is_serialized( $excercise_meta['video'][0] )){
+                $video_url = maybe_unserialize( $excercise_meta['video'][0] )[0];
+            }else{
+                $video_url = $excercise_meta['video'][0];
+            }
+
+            
             $data[] = array(
                 'id'=> $excercise->ID,
                 'name' => $excercise->post_title,
