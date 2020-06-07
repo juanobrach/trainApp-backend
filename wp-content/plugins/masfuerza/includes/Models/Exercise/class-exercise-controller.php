@@ -29,16 +29,13 @@ class Exercise extends Controller{
         foreach( $search_results as $excercise ){
             
             $excercise_meta = get_post_meta($excercise->ID);
-
+            $featured_image = get_the_post_thumbnail_url($excercise->ID);
+            
 
             $exercise_category = get_the_terms( $excercise->ID, 'exercise_category' );      
             $category = $exercise_category[0];
             
-            $images_ids =  maybe_unserialize( $excercise_meta['images'][0] );
-            $images = array();
-            foreach( $images_ids as $image_id){
-                $images[] = wp_get_attachment_image_src( $image_id, 'normal' )[0];
-            }
+          
 
             $video_url = "";
             if( is_serialized( $excercise_meta['video'][0] )){
@@ -56,7 +53,7 @@ class Exercise extends Controller{
                     'id' => $category->term_id,
                     'name' => $category->name
                 ),
-                'images'  => $images,
+                'image'  => $featured_image,
                 'video' => $video_url
             );
         }
