@@ -135,4 +135,12 @@ class Auth extends Controller{
         return true;         
     }
 
+
+    function Change_password($data){
+        $user_id = $data['userId'];
+        $password = $data['password'];
+        wp_set_password( $password, $user_id );
+        return true;
+    }
+
 }
