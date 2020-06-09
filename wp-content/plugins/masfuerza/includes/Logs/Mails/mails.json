@@ -1,0 +1,19 @@
+[
+    {
+        "user": "juan"
+    },
+    {
+        "user": {
+            "trainerId": "11",
+            "athlete": {
+                "firstName": "Juan",
+                "lastName": "Obrach",
+                "email": "juanobrach+1212@gmail.com",
+                "phone": "5528984071",
+                "username": "juanobrach+1212@gmail.com"
+            }
+        },
+        "error": true,
+        "message": ""
+    }
+]
