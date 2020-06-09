@@ -76,8 +76,8 @@ class Membership extends Controller{
                 
                 $subscription = array(
                     'active'=> $is_active,
-                    'from' => date( 'm-j-Y',strtotime($subscription_data->date_created->date) ),
-                    'to' =>  date( 'm-j-Y', strtotime($subscription_data->schedule_next_payment->date)),
+                    'from' => date( 'j-m-Y',strtotime($subscription_data->date_created->date) ),
+                    'to' =>  date( 'j-m-Y', strtotime($subscription_data->schedule_next_payment->date)),
                     'daysLeft' => $days_left,
                     'woocommerceId'=> $subscription_data->id,
                     'paymentInformation'=> array(
