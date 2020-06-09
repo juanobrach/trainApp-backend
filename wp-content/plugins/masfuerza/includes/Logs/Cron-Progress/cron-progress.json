@@ -1,0 +1,25 @@
+[
+    {
+        "id": 20
+    },
+    {
+        "id": 20
+    },
+    {
+        "planification_id": 3381,
+        "routines": [
+            {
+                "routine_id": 0
+            }
+        ]
+    },
+    {
+        "planification_id": 3381,
+        "routines": [
+            {
+                "routine_id": 0
+            }
+        ],
+        "finished": true
+    }
+]

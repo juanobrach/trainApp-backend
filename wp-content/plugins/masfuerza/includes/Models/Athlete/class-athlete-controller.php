@@ -20,6 +20,13 @@ class Athlete extends Controller{
 
 
     public function create_athlete($data){
+        $log_file_dir =  ABSPATH . "wp-content/plugins/masfuerza/includes/Logs/Mails/mails.json";
+        
+        $log_data = array(
+            'user' => $data,
+            'error'=> false,
+            'message'=> ''
+        );
 
         $user_credentials = array(
             "username" => $data->athlete->username,
@@ -53,7 +60,7 @@ class Athlete extends Controller{
                 
                 
                 
-                $file_path = dirname( dirname( dirname( dirname(__FILE__)))) .'/mails/welcome/welcome.html';
+                $file_path = ABSPATH . "wp-content/plugins/masfuerza/mails/welcome/welcome.html";
 
                 $template = file_get_contents( $file_path );
         
@@ -73,9 +80,10 @@ class Athlete extends Controller{
                 $headers = array('Content-Type: text/html; charset=UTF-8');
                 
                 $mail = wp_mail( $to, $subject, $template, $headers );
-
-
-
+                if(!$mail){
+                    $log_data['error'] = true;
+                    logger($log_data , $log_file_dir);
+                }
                 $athlete = $this->get_athlete_by_id($user_id); 
                 return $athlete;
                 
