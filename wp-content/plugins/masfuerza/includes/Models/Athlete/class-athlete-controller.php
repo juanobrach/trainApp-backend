@@ -30,7 +30,7 @@ class Athlete extends Controller{
 
         $user_credentials = array(
             "username" => $data->athlete->username,
-            "password" => $data->athlete->firstName."_".$data->athlete->mobile,
+            "password" => str_replace(' ', '_', $data->athlete->firstName."_".$data->athlete->phone),
             "email"    => $data->athlete->email
         );        
 
