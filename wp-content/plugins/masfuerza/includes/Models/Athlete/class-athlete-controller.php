@@ -30,7 +30,7 @@ class Athlete extends Controller{
 
         $user_credentials = array(
             "username" => $data->athlete->username,
-            "password" => $data->athlete->mobile,
+            "password" => $data->athlete->firstName."_".$data->athlete->mobile,
             "email"    => $data->athlete->email
         );        
 
@@ -67,7 +67,7 @@ class Athlete extends Controller{
                 $variables = array();
                 $variables['athlete_name'] = $data->athlete->firstName;
                 $variables['user_name'] =  $data->athlete->username;
-                $variables['password'] = $data->athlete->phone;
+                $variables['password'] = $user_credentials['password'];
         
                 foreach($variables as $key => $value)
                 {
