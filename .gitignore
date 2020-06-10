@@ -5,8 +5,8 @@ wp-content/*
 !wp-content/plugins/
 !wp-content/themes/
 
-wp-content/plugins/*
-!wp-content/plugins/masfuerza/
+#wp-content/plugins/*
+#!wp-content/plugins/masfuerza/
 
 
 

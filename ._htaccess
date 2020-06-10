@@ -1,0 +1,68 @@
+<IfModule mod_rewrite.c>
+Options +FollowSymLinks
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+# BEGIN HttpHeaders
+# The directives (lines) between `BEGIN HttpHeaders` and `END HttpHeaders` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeaders
+# BEGIN WordPress
+# The directives (lines) between `BEGIN WordPress` and `END WordPress` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+Options +FollowSymLinks
+RewriteEngine On
+RewriteBase /~masfuerz/stage/backend/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /~masfuerz/stage/backend/index.php [L]
+</IfModule>
+
+# END WordPress
+
+# BEGIN HttpHeadersCompression
+# The directives (lines) between `BEGIN HttpHeadersCompression` and `END HttpHeadersCompression` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeadersCompression
+# BEGIN HttpHeadersContentType
+# The directives (lines) between `BEGIN HttpHeadersContentType` and `END HttpHeadersContentType` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeadersContentType
+# BEGIN HttpHeadersExpires
+# The directives (lines) between `BEGIN HttpHeadersExpires` and `END HttpHeadersExpires` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeadersExpires
+# BEGIN HttpHeadersTiming
+# The directives (lines) between `BEGIN HttpHeadersTiming` and `END HttpHeadersTiming` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeadersTiming
+# BEGIN HttpHeadersAuth
+# The directives (lines) between `BEGIN HttpHeadersAuth` and `END HttpHeadersAuth` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeadersAuth
+# BEGIN HttpHeadersCookieSecurity
+# The directives (lines) between `BEGIN HttpHeadersCookieSecurity` and `END HttpHeadersCookieSecurity` are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+# END HttpHeadersCookieSecurity
