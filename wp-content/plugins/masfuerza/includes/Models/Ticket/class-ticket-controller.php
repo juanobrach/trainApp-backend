@@ -51,14 +51,12 @@ class Ticket extends Controller{
     public function get_ticket($user_id, $ticket_id, $with_thread=true){
         
         $url = get_site_url() . '/wp-json/supportcandy/v1/tickets/' . $ticket_id;
+
         $support_auth_user =  get_user_meta( (int)$user_id,'support_auth_user', true);
         $support_auth_token =  get_user_meta( (int)$user_id,'support_auth_token', true);
         
-        $statues = array();
-        $statues[38] = "En proceso";
-        $statues[39] = "En espera de la respuesta del cliente";
-        $statues[40] = "En espera de respuesta del agente";
-        $statues[41] = "Cerrado";
+        
+
 
         $headers = array( 
             'Content-type' => 'application/json',
@@ -71,7 +69,6 @@ class Ticket extends Controller{
             'auth_token' => $support_auth_token
         );
         $query_params = http_build_query($body);
-                
         $response = wp_remote_post( $url . '/?'.$query_params, array(
             'method'      => 'POST',
             'timeout'     => 45,
@@ -81,8 +78,25 @@ class Ticket extends Controller{
         );
         $response = json_decode( $response['body'] );
         
+        
+       
+
         $ticket =  json_decode( json_encode($response), true);
         
+        
+        // Statues Query
+        $statues_url = get_site_url() .'/wp-json/supportcandy/v1/statuses';
+        $response_statues = wp_remote_post( $statues_url . '/'.$ticket['ticket_status'], array(
+            'method'      => 'GET',
+            'timeout'     => 45,
+            'cookies'     => array(),
+            'headers'     =>  $headers
+            )
+        );
+
+        $status = json_decode(  $response_statues['body'] );    
+        
+
         $ticket = array(
             'id' => (int)$ticket['ticket_id'],
             'authCode' => $ticket['ticket_auth_code'],
@@ -92,7 +106,7 @@ class Ticket extends Controller{
             'message' => $ticket['ticket_description'],
             'status' => array(
                 'id'=> (int)$ticket['ticket_status'],
-                'message'=> $statues[$ticket['ticket_status']],
+                'message'=> $status->name,
             ),
             // 'thread' => $thread
         );
@@ -110,12 +124,7 @@ class Ticket extends Controller{
 
         $support_auth_user =  get_user_meta((int) $user_id,'support_auth_user', true);
         $support_auth_token =  get_user_meta( (int)$user_id,'support_auth_token', true);
-        $statues = array();
-        $statues[38] = "En proceso";
-        $statues[39] = "En espera de la respuesta del cliente";
-        $statues[40] = "En espera de respuesta del agente";
-        $statues[41] = "Cerrado";
-
+      
         $url = get_site_url() . '/wp-json/supportcandy/v1/tickets';
 
         $headers = array( 
@@ -142,7 +151,20 @@ class Ticket extends Controller{
         $tickets = array();
         foreach( $response->tickets as $ticket ){            
             $ticket =  json_decode( json_encode($ticket), true);
-        
+           
+            // Statues Query
+            $statues_url = get_site_url() .'/wp-json/supportcandy/v1/statuses';
+            $response_statues = wp_remote_post( $statues_url . '/'.$ticket['ticket_status'], array(
+                'method'      => 'GET',
+                'timeout'     => 45,
+                'cookies'     => array(),
+                'headers'     =>  $headers
+                )
+            );
+    
+            $status = json_decode( $response_statues['body'] );    
+
+
             $ticket = array(
                 'id' => (int)$ticket['ticket_id'],
                 'subject' => $ticket['ticket_subject'],
@@ -152,7 +174,7 @@ class Ticket extends Controller{
                 'message' => $ticket['ticket_description'],
                 'status' => array(
                     'id'=> (int)$ticket['ticket_status'],
-                    'message'=> $statues[$ticket['ticket_status']],
+                    'message'=> $status->name,
                 ),
                 // 'thread' => $thread
             );

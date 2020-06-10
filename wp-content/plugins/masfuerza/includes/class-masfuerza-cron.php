@@ -21,7 +21,10 @@ class Masfuerza_Cron {
 
 	public function routines_progress(){
     $Planification = new Planification();
-    $log = "running cron";
+    $log_file_dir =  dirname(__FILE__)."/Logs/Cron-Progress/cron-progress.json";
+    $data_log = array();
+
+    
     
     $args = array(
       'numberposts' =>  -1,
@@ -35,25 +38,31 @@ class Masfuerza_Cron {
     foreach( $wp_planifications as $planification_wp ){
       
       $planification =  $Planification->get_planification_by_id($planification_wp->ID);
+      $data_log['planification_id'] = $planification_wp->ID;
+
       foreach( $planification['routines'] as $routine  ){        
 
         // if( $routine['active'] === 1 ){          
+          if( $routine['active'] === true ){     
+            
+            
+            // Desactivate routine
+            update_field( "routines_planification_".$routine['id']."_active", 0 ,  (int)$planification['id'] );
+            // TODO : update progress
+            $progress = $Planification->update_progress($routine['id'], $planification_wp->ID, $routine['daysPerWeek']);
+           
+            $data_log['routines'][] = array(
+              'routine_id' => $routine['id']
+            );
+            
+            update_field( "routines_planification_".$routine['id']."_progress", array( $progress['data'] ) ,  (int)$planification['id'] );          
+            if( $progress['finished'] === true ){
+              $data_log['finished'] = true;
+              update_field( "planification_active", 0 ,  (int)$planification['id'] );
+              update_field( "planification_finished", 1 ,  (int)$planification['id'] );
+            }
 
-        if( $routine['active'] === 1 ){          
-          
-          // Desactivate routine
-          update_field( "routines_planification_".$routine['id']."_active", 0 ,  (int)$planification['id'] );
-          // TODO : update progress
-          $progress = $Planification->update_progress($routine['id'], $planification_wp->ID, $routine['daysPerWeek']);
-          
-          update_field( "routines_planification_".$routine['id']."_progress", array( $progress['data'] ) ,  (int)$planification['id'] );          
-          if( $progress['finished'] === true ){
-            update_field( "planification_active", 0 ,  (int)$planification['id'] );
-            update_field( "planification_finished", 1 ,  (int)$planification['id'] );
-          }
-          
-
-          error_log( "Planificaciones modificaada: " . $planification['id'] ." \n" , 3,  dirname(__FILE__)."/my-errors.log");
+            logger($data_log, $log_file_dir);
         }
       }
     }
