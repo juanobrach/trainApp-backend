@@ -7,6 +7,9 @@ class Program extends Controller{
         $this->dosing = new Dosing();        
     }
 
+
+
+
     /**
      * Get all planifications
      * ROUTINES [ days_per_week, heating, workouts ]
@@ -225,7 +228,7 @@ class Program extends Controller{
             'daysPerWeekTotal'=> $routines_days_per_week_total,
             'athletes' => $athletes,
             'routines' => $routines,
-            'trainer'=> $data['trainer'][0]
+            'trainerId'=> $data['trainer'][0]
             // 'author' => array(
             //     'id'=> $author_id,
             //     'name'=> $author_data->display_name,
@@ -441,11 +444,10 @@ class Program extends Controller{
 
     }
 
-
-
     public function handle_update_program($program_data, $program_id ){
 
         $program = $this->map_program_fields( $program_data);        
+        
         return $this->update_program($program, $program_id);
     }
 
@@ -531,7 +533,6 @@ class Program extends Controller{
 
     }
 
-
     /**
      *  Fn to update a routine inside an existing planification
      *
@@ -545,7 +546,6 @@ class Program extends Controller{
         $this->update_routine_days_per_week( $routine, $routines, $program_id );
     }
 
-
     public function update_routine_days_per_week($routine,$routines, $program_id){
         $max_day_for_week_exceeded = $this->max_day_for_week_exceeded($routine, $routines );
 
@@ -557,7 +557,6 @@ class Program extends Controller{
         update_row( "routines_".($routine['id'] - 1)."_heating", $routine['id'], $routine['heating'], $program_id);
 
     }
-
 
     // Add a new routine into a planification
     public function create_routine($routine_data, $planification_routines, $program_id ){
@@ -584,8 +583,6 @@ class Program extends Controller{
         $routine_id  =  $data['routine_id'];
         $this->update_workout($workout, $routine_id ,$program_id);
     }
-
-
 
     public function bulk_update_workout($workouts, $routine_id, $program_id ){
         
@@ -655,9 +652,6 @@ class Program extends Controller{
 
     }
 
-
-
-
     public function handle_delete_program($program_sku){
         $program = $this->delete_program( $program_sku );
         return $program;
@@ -687,10 +681,6 @@ class Program extends Controller{
         $deleted = delete_row('routines',  $routine_row, $planification_id );
         return $deleted;
     }
-
-
-
-
 
     public function handle_delete_workout($request){
         $data = $request->get_json_params();
@@ -740,9 +730,6 @@ class Program extends Controller{
     }
 
 
-
-
-
     /**
      *  Check for days available to create the routine
      */
@@ -763,6 +750,13 @@ class Program extends Controller{
 
     }
 
+
+    public function clone_program( $program_data ){
+        $program = $this->create_program($program_data);
+        
+        $program_data = $program_data->get_json_params();        
+        return $this->handle_update_program($program_data, $program['id']);
+    }
 
 
     /**
@@ -808,38 +802,10 @@ class Program extends Controller{
 
         update_field('trainer', $trainerId, $program_id );
 
-
-        // // Add routines
-        // if( !empty($routines) ){
-        //     foreach( $routines as $_routine  ){
-        //         $workouts = array();
-
-        //         foreach( $_routine['exercises'] as $workout ){
-
-        //             $workouts[] = array(
-        //                 "workout" => array( $workout['id'] ),
-        //                 "super_serie"=> array( $workout['superWorkOutId'] ),
-        //                 "note"=> array( $workout['note'] ),
-        //                 "dosage"=> array( $workout['dosings']['id'] )
-        //             );
-        //         }
-
-        //         $routine = array(
-        //             "days_per_week"=> $_routine['daysPerWeek'],
-        //             "heating" => array($_routine['warmUpId']),
-        //             "workouts" => $workouts
-        //         );
-
-        //         $this->create_routine($routine, $routines, $program_id);
-        //     }
-        // }
-
-
-
         $created_program = $this->get_program_by_id( $program_id);
 
-        echo json_encode( $created_program );
-        return;
+        //echo json_encode( $created_program );
+        return $created_program;
 
     }
 
