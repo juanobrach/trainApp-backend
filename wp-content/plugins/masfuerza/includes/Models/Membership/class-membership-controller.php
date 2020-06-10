@@ -70,10 +70,14 @@ class Membership extends Controller{
                 $diff = date_diff( date_create($NewDate),date_create(date("M j, Y")));
                 $days_left = $diff->format('%r%a');
 
+
+                // Format  'from' date
+                $subscription_from = $subscription_data->date_created->date; 
+                
                 $subscription = array(
                     'active'=> $is_active,
-                    'from' => $subscription_data->date_created->date,
-                    'to' =>  $subscription_data->schedule_next_payment->date,
+                    'from' => date( 'j-m-Y',strtotime($subscription_data->date_created->date) ),
+                    'to' =>  date( 'j-m-Y', strtotime($subscription_data->schedule_next_payment->date)),
                     'daysLeft' => $days_left,
                     'woocommerceId'=> $subscription_data->id,
                     'paymentInformation'=> array(

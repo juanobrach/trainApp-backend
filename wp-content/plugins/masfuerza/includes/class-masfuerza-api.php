@@ -29,6 +29,7 @@ class Masfuerza_Api {
 		$Athlete_api = new AthleteAPI();
 		$Membership_api = new MembershipAPI();
 		$Trainer_api = new TrainerAPI();
+		$Ticket_api = new TicketAPI();
 
 	}
 

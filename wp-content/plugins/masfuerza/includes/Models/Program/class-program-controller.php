@@ -23,7 +23,6 @@ class Program extends Controller{
 
         $search_results = get_posts($args);
 
-
         $programs = array();
         foreach( $search_results as $program ){
             $routines = array();
@@ -58,7 +57,15 @@ class Program extends Controller{
                 $routine_days_per_week_string = $data['routines_'.$routine.'_days_per_week'][0];
                 $routine_days_per_week_number = strpos( $routine_days_per_week_string, '2') !== false ? 2 : 3;
                 $routine_workouts_amount = $data['routines_'.$routine.'_workouts'][0];
-                $heating_id = maybe_unserialize( $data['routines_'.$routine.'_heating'][0] );
+                
+                $heating_id = 0;
+                if( is_serialized( $data['routines_'.$routine.'_heating'][0] ) ){
+                    $heating_id = maybe_unserialize( $data['routines_'.$routine.'_heating'][0] )[0];
+                }else{
+                    $heating_id = $data['routines_'.$routine.'_heating'][0];
+                }
+
+
                 $heating_data = $this->get_data('heating',$heating_id);
                 $routines[$routine] = array(
                     "id" => $routine + 1,
@@ -90,7 +97,6 @@ class Program extends Controller{
                     }else{
                         $dosage_id = $data['routines_'.$routine.'_workouts_'.$workout.'_dosage'][0];
                     }
-
 
                     $dosage_data = $this->dosing->get_dosing( $dosage_id);
                     $routines[$routine]['exercises'][] = array(
@@ -557,13 +563,13 @@ class Program extends Controller{
     public function create_routine($routine_data, $planification_routines, $program_id ){
         if ( $program_id <= 0  ){
             $error = new WP_Error( '001', 'No es posbile crear una rutina sin un ID de planificaicon', 'Some information' );
-            return wp_send_json_error($error);
+            return wp_send_json_error($error, 404);
         }
 
         $max_day_for_week_exceeded = $this->max_day_for_week_exceeded($routine_data, $planification_routines );
         if( $max_day_for_week_exceeded ){
             $error = new WP_Error( '001', 'Excediste la cantidad maxima de dias por semana para una planificacion', 'Some information' );
-            return wp_send_json_error($error);
+            return wp_send_json_error($error, 404);
         }else{            
             add_row('routines', $routine_data, $program_id);
         }

@@ -41,7 +41,7 @@ class Planification extends Controller{
         $planification = array();
         $routines = array();
         $data = get_post_meta($id);
-
+        
         // print_r(get_field('field_5e8fb36555068', 3089));die;
         
         
@@ -64,16 +64,30 @@ class Planification extends Controller{
 
             $workouts_amount = $data['routines_planification_'.$routine.'_workouts'][0];
             $routine_days_per_week = $data['routines_planification_'.$routine.'_days_per_week'][0];
-            $heating_id = maybe_unserialize( $data['routines_planification_'.$routine.'_heating'][0] )[0];
+            if( is_serialized( $data['routines_planification_'.$routine.'_heating'][0] )){
+                $heating_id = (int)maybe_unserialize( $data['routines_planification_'.$routine.'_heating'][0] )[0];
+            }else{
+                $heating_id = (int)$data['routines_planification_'.$routine.'_heating'][0];
+            }
+            
             $heating_data = $this->get_data('heating',$heating_id);
 
+            
             $completed_days = $data['routines_planification_'.$routine.'_progress_0_completed_days'][0];
-            $actual_day = $data['routines_planification_'.$routine.'_progress_0_actual_day'][0];
-            $next_day = $data['routines_planification_'.$routine.'_progress_0_next_day'][0];
-            $actual_week = $data['routines_planification_'.$routine.'_progress_0_actual_week'][0];
+            $actual_day = (int)$data['routines_planification_'.$routine.'_progress_0_actual_day'][0];
+            $next_day = (int)$data['routines_planification_'.$routine.'_progress_0_next_day'][0];
+            $actual_week =(int) $data['routines_planification_'.$routine.'_progress_0_actual_week'][0];
             $completed_weeks = $data['routines_planification_'.$routine.'_progress_0_completed_weeks'][0];
+            
+
+              if( is_serialized( $data['routines_planification_'.$routine.'_active'][0] )){
+                $routine_active = (int)maybe_unserialize( $data['routines_planification_'.$routine.'_active'][0] )[0];
+            }else{
+                $routine_active = (int)$data['routines_planification_'.$routine.'_active'][0];
+            }
 
             
+
             
 
             $progress = array(
@@ -88,11 +102,11 @@ class Planification extends Controller{
                 'id'=> $routine,
                 'name'=>$routinesName[$routine],
                 'daysPerWeek'=> (int)$routine_days_per_week,
-                'warmupId' => $heating_id,
+                'warmUpId' => $heating_id,
                 'warmUpName'=> $heating_data['title'],
                 'totalExercises'=> $workouts_amount,
                 'progress'=>  $progress,
-                'active'=>false
+                'active'=>  ($routine_active === 1 ? true : false)
             );
 
 
@@ -137,7 +151,11 @@ class Planification extends Controller{
                 }
 
                 $note = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_note'][0]);
-                $dosage_id =  maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
+                if(is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0] )){
+                    $dosage_id = (int) maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
+                }else{
+                    $dosage_id = (int)$data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0];
+                }
 
                 $min_weeks = 4;
                 $dosings = array();
@@ -158,14 +176,17 @@ class Planification extends Controller{
                     }
                     $weeks[] = $week_data;
                 }
-                
                 $exercise_name = $workout_data['name'][0];
                 $super_workout_name = $super_workout_data['name'][0];
+                
+                $dosage_data = $this->get_data( 'dosing', $dosage_id );
+                
                 $dosings['id'] = $dosage_id;
+                $dosings['name'] = $dosage_data['title'];
                 $dosings['weeks'] = $weeks;
                 $routines[$routine]['exercises'][] = array(
-                    'exerciseId'=>  (int)$workout_id,
-                    'exerciseName'=> $exercise_name,
+                    'id'=>  (int)$workout_id,
+                    'name'=> $exercise_name,
                     'superExerciseId' => $super_workout_id,
                     'superExerciseName'=> $super_workout_name,
                     'note'=>$note,
@@ -178,8 +199,9 @@ class Planification extends Controller{
         
         $planification = array(
             'id'=> $id,
-            'athleteId' => $athlete_id,
+            'athleteId' => (int)$athlete_id,
             'programId'=> $data['program'][0],
+            'programSku'=> $data['program_sku'][0],
             'name'=> $name,
             'trainerId' => $author_id,
             // 'routines_amount'=> $routines_amount,
@@ -221,18 +243,73 @@ class Planification extends Controller{
 
     // }
 
-    public function map_planification_fields($planification_data){        
+    public function update_progress($routine_id, $planification_id, $days_per_week){
+//print_r($planification_id);die;
+        $data = array(
+            'finished'=> 0,
+            'data'=> array()
+        );
+
+        $next_progress = array(); 
+        $actual_progress = get_field('routines_planification_' . $routine_id . '_progress', $planification_id );
         
+        // Completed day
+        $next_progress['actual_day'] = $actual_progress[0]['actual_day'] + 1;
+        $next_progress['next_day'] = $next_progress['actual_day'] + 1;
+
+        // Convert string to array and then add new day
+        $completed_days = $actual_progress[0]['completed_days'];
+
+        $completed_days_arr = preg_split("/[\s,]+/", $completed_days);
+        if( $completed_days_arr[0] != "" ){
+            $completed_days_arr[] = $actual_progress[0]['actual_day'];
+            $completed_days = implode(', ', $completed_days_arr);
+        }else{
+            $completed_days = $actual_progress[0]['actual_day'];
+        }        
+        $next_progress['completed_days']  = $completed_days;        
+        $completed_weeks = $actual_progress[0]['completed_weeks'];
+        
+        
+        // Completed week
+        if(  (int)$actual_progress[0]['actual_day'] === (int)$days_per_week ){
+            $next_progress['actual_week'] = $actual_progress[0]['actual_week'] + 1;
+           
+            // WEEKS STRING
+            $completed_weeks_arr = preg_split("/[\s,]+/", $completed_weeks);
+            if( $completed_weeks_arr[0] != "" ){
+                $completed_weeks_arr[] = $actual_progress[0]['actual_week'];
+                $completed_weeks = implode(', ', $completed_weeks_arr);
+            }else{
+                $completed_weeks = $actual_progress[0]['actual_week'];
+            }   
+
+            $next_progress['completed_days']  = $completed_days;        
+            $next_progress['completed_weeks'] = $completed_weeks;            
+            $next_progress['actual_day'] = 1;
+            $next_progress['next_day'] = 2;
+
+        }
+        
+        if(  (  count ( explode ( ',', $next_progress['completed_weeks'] ) ) ) ===  4 ){
+            $data['finished'] = true;
+        }
+
+        $data['data'] = $next_progress;
+        return $data;
+    }
+
+    public function map_planification_fields($planification_data){        
         $routines = array();
 
         foreach($planification_data['routines'] as $routines_data ){
-                    
+                                
             $workouts = array();
 
             // For each workout
-            $dosage = array();
             foreach( $routines_data['exercises'] as $exercise_data ){
                 
+                $dosage = array();
                 $dosings = $exercise_data['dosings'];
                 $dosage['id'] = $dosings['id'];
                 foreach($dosings['weeks'] as $key => $week){
@@ -251,7 +328,7 @@ class Planification extends Controller{
 
 
                 $workouts[] = array(
-                    'workout'=>(int) $exercise_data['exerciseId'],
+                    'workout'=>(int) $exercise_data['id'],
                     'dosage' => array( $dosage ),
                     'super_serie' => $exercise_data['superExerciseId'],
                     'note' => $exercise_data['note']
@@ -272,7 +349,8 @@ class Planification extends Controller{
                 'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
-                'progress'=> array( $progress )
+                'progress'=> array( $progress ),
+                'active' => ($routines_data['active'] === true ? 1 : 0)
             );
             
         }
@@ -507,10 +585,6 @@ class Planification extends Controller{
 
     }
 
-
-
-
-
     /**
      *  Check for days available to create the routine
      */
@@ -614,6 +688,7 @@ class Planification extends Controller{
         $planification_data =  $this->map_planification_fields($planification);
         $routines = $planification_data['routines'];
 
+        
         if ( empty( $program_sku ) ) {
             $error = new WP_Error( '001', 'No es posible crear una planificacion sin el SKU de un programa', 'Some information' );
             return wp_send_json_error($error);
@@ -643,6 +718,7 @@ class Planification extends Controller{
         update_field('program',$program_id, $planification_id);
         update_field('planification_active', true, $planification_id);
         update_field('sku', $sku, $planification_id);
+        update_field('program_sku', $program_sku, $planification_id);
 
         // Add athlete to program
         $assigned_athletes =  get_field('athletes', $program_id);
@@ -706,7 +782,19 @@ class Planification extends Controller{
         
     }
 
+    public function get_planification_by_sku($sku){
+        $args = array(
+            'numberposts' =>  1,
+            'post_type'		=> 'planification',
+            'meta_key'		=> 'sku',
+            'meta_value'	=> $sku
+        );
 
+        $wp_planification = get_posts( $args );   
+        
+        return $this->get_planification_by_id($wp_planification[0]->ID);        
+        
+    }
 
     public function asign_routine($data){
         $planification_id = $data['planification_id'];
