@@ -23,7 +23,12 @@ class Exercise extends Controller{
 
     public function get_all_exercises(){
         $data = array();
-        $search_results = get_posts(array( 'post_type'=> 'exercise', "posts_per_page" =>  -1));
+        $search_results = get_posts(array( 
+            'post_type'=> 'exercise', 
+            "posts_per_page" =>  -1,
+            'orderby' => 'title',
+            'order'   => 'ASC'
+        ));
         
 
         foreach( $search_results as $excercise ){

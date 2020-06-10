@@ -201,6 +201,7 @@ class Planification extends Controller{
             'id'=> $id,
             'athleteId' => (int)$athlete_id,
             'programId'=> $data['program'][0],
+            'programSku'=> $data['program_sku'][0],
             'name'=> $name,
             'trainerId' => $author_id,
             // 'routines_amount'=> $routines_amount,
@@ -717,6 +718,7 @@ class Planification extends Controller{
         update_field('program',$program_id, $planification_id);
         update_field('planification_active', true, $planification_id);
         update_field('sku', $sku, $planification_id);
+        update_field('program_sku', $program_sku, $planification_id);
 
         // Add athlete to program
         $assigned_athletes =  get_field('athletes', $program_id);
@@ -793,8 +795,6 @@ class Planification extends Controller{
         return $this->get_planification_by_id($wp_planification[0]->ID);        
         
     }
-
-
 
     public function asign_routine($data){
         $planification_id = $data['planification_id'];

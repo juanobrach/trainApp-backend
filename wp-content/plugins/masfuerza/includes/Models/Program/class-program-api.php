@@ -43,6 +43,11 @@ class ProgramAPI {
             'methods' => 'POST',
             'callback' => array($this, 'create_program'),
         ));
+
+        register_rest_route( 'masfuerza/v1', '/programs/clone_program', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'clone_program'),
+        ));
         
         register_rest_route( 'masfuerza/v1', '/programs/update_program', array(
             'methods' => 'POST',
@@ -53,9 +58,6 @@ class ProgramAPI {
             'methods' => 'POST',
             'callback' => array($this, 'handle_delete_program'),
         ));
-
-
-
 
 
         // Routine
@@ -78,10 +80,6 @@ class ProgramAPI {
             'methods' => 'POST',
             'callback' => array($this, 'handle_assing_athlete'),
         ));
-
-        
-        
-
 
         register_rest_route( 'masfuerza/v1', '/programs/handle_add_workout', array(
             'methods' => 'POST',
@@ -156,8 +154,12 @@ class ProgramAPI {
         $this->program->handle_update_routine($data);
     }
 
-    public function create_program($planification){
-        $this->program->create_program($planification);
+    public function create_program($program){
+        return $this->program->create_program($program);
+    }
+
+    public function clone_program($program){
+        return $this->program->clone_program($program);
     }
 
     public function get_form_fields(){
