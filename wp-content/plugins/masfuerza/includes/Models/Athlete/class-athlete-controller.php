@@ -171,7 +171,8 @@ class Athlete extends Controller{
             'firstName'=> $trainer_data['first_name'][0],
             'lastName'=> $trainer_data['last_name'][0],
             'email' => $trainer_data['billing_email'][0],
-            'phone' => $trainer_data['phone'][0]
+            'phone' => $trainer_data['phone'][0],
+            'id'=> (int)$trainer_id
         );
 
         return $trainer;           
