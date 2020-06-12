@@ -147,8 +147,10 @@ class Planification extends Controller{
                 $workout_data = array();
                 if((int) $workout_id > 1 ){
                     $workout_data = $this->get_data( 'exercise', $workout_id );
-                    
                 }
+
+                
+                
 
                 $note = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_note'][0]);
                 if(is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0] )){
@@ -176,8 +178,8 @@ class Planification extends Controller{
                     }
                     $weeks[] = $week_data;
                 }
-                $exercise_name = $workout_data['name'][0];
-                $super_workout_name = $super_workout_data['name'][0];
+                $exercise_name = $workout_data['title'];
+                $super_workout_name = $super_workout_data['title'];
                 
                 $dosage_data = $this->get_data( 'dosing', $dosage_id );
                 
