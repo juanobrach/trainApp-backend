@@ -14,14 +14,17 @@ class Dosing extends Controller{
         ." AND      p.post_status   = 'publish'"
         ." AND      u.user_id       = p.`post_author`"
         ." AND      u.meta_key      = 'wp_capabilities'"
-        ." AND      u.meta_value    NOT LIKE '%\"trainer}\"%'"
+        ." AND      u.meta_value    NOT LIKE '%trainer%'"
         );
+
+        
+        
 
         if( $user_id ){
             $personalized = $wpdb->get_results( "SELECT p.* FROM {$wpdb->posts} p"
             ." WHERE    p.post_type     = 'dosing'"
             ." AND      p.post_status   = 'publish'"
-            ." AND      p.post_author       = 11"
+            ." AND      p.post_author       = $user_id"
             );
             foreach( $personalized as $dosing ){
                 $dosage_id = $dosing->ID;
@@ -40,6 +43,7 @@ class Dosing extends Controller{
             
         }
 
+        
 
         // Get personalized
 
@@ -114,13 +118,13 @@ class Dosing extends Controller{
          if( $trainee_per_week === 2 ){
             foreach( $weeks as $week_index => $week ){
                 $week_index =  $week_index+1;
-                echo $week_index;
                 foreach( $week as $day_index => $day ){
                     $day_index = $day_index + 1;
-                    echo $day_index;
                     update_field('programa_2_weekdays_semana_'.$week_index .'_day_' . $day_index, $day, $dosage_id);
                 }
             }
         }
+
+        return $this->get_dosing( $dosage_id, 'personalized' );
     }
 }
