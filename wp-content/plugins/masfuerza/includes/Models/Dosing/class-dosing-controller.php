@@ -51,7 +51,7 @@ class Dosing extends Controller{
         return $data;
     }
 
-    public function get_dosing($dosage_id, $type){
+    public function get_dosing($dosage_id, $type=null){
         $data = array();
         $search_results = get_posts(array(  'posts_per_page'   => -1, 'post_type'=> 'dosing', 'post__in'=> array($dosage_id)));
 
@@ -60,7 +60,6 @@ class Dosing extends Controller{
             $data[] = array();
             
             $meta_data = get_post_meta($dosage_id);
-            
             $trainee_per_week = $meta_data['trainee_per_week'][0];
             $charge_type      = $meta_data['charge_type'][0];
             $total_weeks = 4;
@@ -76,6 +75,8 @@ class Dosing extends Controller{
                 }
                 $weeks[] = $weekData;
             }
+            
+
             $data = array(
                 "id"=> $dosage_id,
                 "traineePerWeek" => (int)$trainee_per_week,
