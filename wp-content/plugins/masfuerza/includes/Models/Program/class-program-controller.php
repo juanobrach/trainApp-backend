@@ -57,8 +57,7 @@ class Program extends Controller{
             $routinesName = array('A', 'B','C','D','E','F','G');
             for( $routine = 0; $routine < $routines_amount; $routine++ ){
                 $workouts_amount =    $data['routines_'.$routine.'_workouts'][0];
-                $routine_days_per_week_string = $data['routines_'.$routine.'_days_per_week'][0];
-                $routine_days_per_week_number = strpos( $routine_days_per_week_string, '2') !== false ? 2 : 3;
+                $routine_days_per_week = $data['routines_'.$routine.'_days_per_week'][0];
                 $routine_workouts_amount = $data['routines_'.$routine.'_workouts'][0];
                 
                 $heating_id = 0;
@@ -75,10 +74,10 @@ class Program extends Controller{
                     'name' => $routinesName[$routine],
                     'warmUpId' => $heating_id,
                     'warmUpName' => $heating_data['title'],
-                    'daysPerWeek'=> $routine_days_per_week_number,
+                    'daysPerWeek'=> $routine_days_per_week,
                     'totalExercises' => $workouts_amount
                 );
-                $routines_days_per_week_total += $routine_days_per_week_number;
+                $routines_days_per_week_total += $routine_days_per_week;
 
                 if( $workouts_amount <= 0 ){
                     $routines[$routine]['exercises'] = array();
@@ -167,8 +166,7 @@ class Program extends Controller{
 
 
 
-            $routine_days_per_week_string = $data['routines_'.$routine.'_days_per_week'][0];
-            $routine_days_per_week_number = strpos( $routine_days_per_week_string, '2') !== false ? 2 : 3;
+            $routine_days_per_week = $data['routines_'.$routine.'_days_per_week'][0];
             $routine_workouts_amount = $data['routines_'.$routine.'_workouts'][0];
 
 
@@ -180,10 +178,10 @@ class Program extends Controller{
                 'name' => $routinesName[$routine],
                 'warmUpId' => $heating_id,
                 'warmUpName' => $heating_data['title'],
-                'daysPerWeek'=> $routine_days_per_week_number,
+                'daysPerWeek'=> $routine_days_per_week,
                 'totalExercises' => $workouts_amount
             );
-            $routines_days_per_week_total += $routine_days_per_week_number;
+            $routines_days_per_week_total += $routine_days_per_week;
 
             if( $workouts_amount <= 0 ){
                 $routines[$routine]['exercises'] = array();
