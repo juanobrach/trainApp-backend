@@ -100,7 +100,8 @@ class Auth extends Controller{
                     'last_name' => $user_meta['last_name'][0],
                     'username' => $user->data->user_nicename,
                     'email' => $user->data->user_email,
-                    'roles' => $user_data->roles
+                    'roles' => $user_data->roles,
+                    'profile_picture' => $user_meta['user_profile_avatar'][0],
                 );                
                 return $user;
             }
