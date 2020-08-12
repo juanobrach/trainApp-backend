@@ -246,7 +246,9 @@ class Planification extends Controller{
     // }
 
     public function update_progress($routine_id, $planification_id, $days_per_week){
-//print_r($planification_id);die;
+
+        
+        //print_r($planification_id);die;
         $data = array(
             'finished'=> 0,
             'data'=> array()
@@ -258,7 +260,7 @@ class Planification extends Controller{
         // Completed day
         $next_progress['actual_day'] = $actual_progress[0]['actual_day'] + 1;
         $next_progress['next_day'] = $next_progress['actual_day'] + 1;
-
+        
         // Convert string to array and then add new day
         $completed_days = $actual_progress[0]['completed_days'];
 
@@ -268,35 +270,39 @@ class Planification extends Controller{
             $completed_days = implode(', ', $completed_days_arr);
         }else{
             $completed_days = $actual_progress[0]['actual_day'];
-        }        
+        }
+
         $next_progress['completed_days']  = $completed_days;        
         $completed_weeks = $actual_progress[0]['completed_weeks'];
         
         
+                        
         // Completed week
         if(  (int)$actual_progress[0]['actual_day'] === (int)$days_per_week ){
             $next_progress['actual_week'] = $actual_progress[0]['actual_week'] + 1;
-           
-            // WEEKS STRING
-            $completed_weeks_arr = preg_split("/[\s,]+/", $completed_weeks);
-            if( $completed_weeks_arr[0] != "" ){
-                $completed_weeks_arr[] = $actual_progress[0]['actual_week'];
-                $completed_weeks = implode(', ', $completed_weeks_arr);
+            
+            if( (int)$actual_progress[0]['actual_week']  === 0 ){
+                $completed_weeks = 1;
             }else{
-                $completed_weeks = $actual_progress[0]['actual_week'];
-            }   
-
+                if( $completed_weeks < 4 ){
+                    $completed_weeks += 1;
+                }
+            }
+            
             $next_progress['completed_days']  = $completed_days;        
-            $next_progress['completed_weeks'] = $completed_weeks;            
+            $next_progress['completed_weeks'] = (int)$completed_weeks;            
             $next_progress['actual_day'] = 1;
             $next_progress['next_day'] = 2;
-
+            
+        }else{
+            $next_progress['completed_weeks'] = (int)$completed_weeks;
+            $next_progress['actual_week'] = $actual_progress[0]['actual_week'];            
         }
         
-        if(  (  count ( explode ( ',', $next_progress['completed_weeks'] ) ) ) ===  4 ){
+        if(  (int)$next_progress['completed_weeks']  ===  4 ){
             $data['finished'] = true;
         }
-
+        
         $data['data'] = $next_progress;
         return $data;
     }
@@ -379,17 +385,33 @@ class Planification extends Controller{
      /**
      *  Update planification
      */
-    public function update_planification($new_planification, $planification_id ){
+    public function update_planification($new_planification, $planification_id, $finishDay, $routineId ){
         // Update Routine
 
         
+        
         $planification = $this->map_planification_fields($new_planification);
+        
 
         // print_r($planification);die;
         
 
         
         $routines = $planification['routines'];
+        
+        if($finishDay === true ){
+            $days_per_week = $routines[$routineId]['days_per_week'];              
+            $progress = $this->update_progress($routineId, $planification_id, $days_per_week);
+            
+            
+            update_field( "routines_planification_".$routineId."_progress", array( $progress['data'] ) ,  (int)$planification_id );          
+            if( $progress['finished'] === true ){
+                update_field( "planification_active", 0 ,  (int)$planification_id );
+                update_field( "planification_finished", 1 ,  (int)$planification_id );
+            }
+
+            $routines[$routineId]['progress'][0] = $progress['data'];             
+        }
 
 
         $planification_post = array(
@@ -434,6 +456,7 @@ class Planification extends Controller{
 
         }
 
+      
         echo json_encode ( $this->get_planification_by_id(  $planification_id  ) );
         return ;
 
@@ -453,6 +476,8 @@ class Planification extends Controller{
         $this->create_routine( $routine, $routines, $planification_id );
 
     }
+
+
 
 
     /**

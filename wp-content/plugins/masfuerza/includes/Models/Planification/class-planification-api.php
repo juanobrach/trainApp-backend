@@ -124,7 +124,7 @@ class PlanificationAPI {
 
     public function handle_update_planification($request){
         $data =  $request->get_json_params();        
-        $this->planification->update_planification($data["data"], (int)$data["id"]);
+        $this->planification->update_planification($data["data"], (int)$data["id"], $data["finishDay"], $data['routineId']);
     }
 
     public function handle_get_planification_by_sku($request){
