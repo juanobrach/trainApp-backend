@@ -15,5 +15,19 @@
         },
         "error": true,
         "message": ""
+    },
+    {
+        "user": {
+            "trainerId": "11",
+            "athlete": {
+                "firstName": "RAUL T",
+                "lastName": "ROBLES LOZANO",
+                "email": "obrachmx@gmail.com",
+                "phone": "45530447",
+                "username": "obrachmx@gmail.com"
+            }
+        },
+        "error": true,
+        "message": ""
     }
 ]

@@ -18,6 +18,11 @@ class AuthAPI {
             'callback' => array($this, 'handle_change_password'),
         ));
 
+        register_rest_route( 'masfuerza/v1', '/update_user_data', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_update_user_data'),
+        ));
+
     }
     // TODO: if use again JWT change get_json_params to get body instead.
     public function Login($credentials){        
@@ -27,6 +32,12 @@ class AuthAPI {
     public function handle_change_password($request){
         $data = $request->get_json_params();
         return $this->auth->Change_password($data);
+    }
+
+    public function handle_update_user_data($request){
+        $data = $request->get_json_params();
+        return $this->auth->update_user_data($data['user_id'], $data['data']);
+
     }
 }
 
