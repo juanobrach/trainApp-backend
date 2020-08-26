@@ -16,6 +16,7 @@ class Planification extends Controller{
     public function get_planifications($author_id=null, $athlete_id=null){
         $args = array(
             'post_type'        => 'planification',
+            'post_status'      => 'publish',
             'posts_per_page'   => -1,
         );
 
@@ -34,6 +35,14 @@ class Planification extends Controller{
         }
 
         return $planifications;
+    }
+
+    public function desactivate_planification_by_id($id){
+        $planification = array(
+            'ID'=> $id,
+            'post_status'   => 'draft',
+        );
+        return wp_update_post( $planification );
     }
 
 
@@ -95,7 +104,7 @@ class Planification extends Controller{
                 'actualDay' => $actual_day,
                 'nextDay' => $next_day,
                 'actualWeek'=> $actual_week,
-                'completedWeeks'=> $completed_weeks
+                'completedWeeks'=> (int)$completed_weeks
             );
             $routinesName = array('A', 'B','C','D','E','F','G');
             $routines[$routine] = array(
@@ -158,6 +167,9 @@ class Planification extends Controller{
                 }else{
                     $dosage_id = (int)$data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0];
                 }
+
+                //print_r($data);die;
+                
 
                 $min_weeks = 4;
                 $dosings = array();
@@ -581,7 +593,7 @@ class Planification extends Controller{
         // delete_row( 'routines_0_workouts_0_workout', 1 ,$planification_id);
         $deleted = delete_row( 'routines_'.($routine_row_number - 1 ).'_workouts', $workout_row_number ,$planification_id  );
 
-        print_r($deleted);die;
+        //print_r($deleted);die;
     }
 
 
@@ -793,9 +805,7 @@ class Planification extends Controller{
         $args = array(
             'post_author'        =>  $trainer_id,
             'numberposts' =>  -1,
-            'post_type'		=> 'planification',
-            'meta_key'		=> 'planification_active',
-            'meta_value'	=> 1
+            'post_type'		=> 'planification'
         );
 
         $wp_planifications = get_posts( $args );   
@@ -826,7 +836,7 @@ class Planification extends Controller{
     public function asign_routine($data){
         $planification_id = $data['planification_id'];
         $routine_id = $data['routine_id'];
-        print_r($data);die;
+        //print_r($data);die;
     }
 
 }

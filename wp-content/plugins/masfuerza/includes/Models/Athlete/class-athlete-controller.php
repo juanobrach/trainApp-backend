@@ -5,6 +5,34 @@ class Athlete extends Controller{
     public function __construct(){}
 
 
+    public function desactivate_athlete($athlete_id){
+        $Planification = new Planification();
+        // Change athlete status to inactive
+        update_user_meta( $athlete_id, 'user_is_active', false );        
+        $planifications   = $Planification->get_planification_by_athlete_id($athlete_id);        
+        foreach( $planifications as $planification ){            
+            $Planification->desactivate_planification_by_id($planification['id']);
+        }
+
+        return true;
+    }
+
+    public function activate_athlete($athlete_id){
+        $Planification = new Planification();
+        // Change athlete status to inactive
+        update_user_meta( $athlete_id, 'user_is_active', true );     
+        
+        // TODO: ask the owner how to handle reactivation of the account and old planifications
+        // $planifications   = $Planification->get_planification_by_athlete_id($athlete_id);        
+        // foreach( $planifications as $planification ){            
+        //     $Planification->desactivate_planification_by_id($planification['id']);
+        // }
+
+        return true;
+    }
+
+    
+
     public function get_athlete_data($athlete_id){        
         $Planification = new Planification();
         $planifications;
@@ -30,7 +58,7 @@ class Athlete extends Controller{
 
         $user_credentials = array(
             "username" => $data->athlete->username,
-            "password" => str_replace(' ', '_', $data->athlete->firstName."_".$data->athlete->phone),
+            "password" => str_replace(' ', '_',  strtolower($data->athlete->firstName)."_".$data->athlete->phone),
             "email"    => $data->athlete->email
         );        
 
@@ -50,6 +78,7 @@ class Athlete extends Controller{
                 update_user_meta($user_id, 'first_name', $data->athlete->firstName );
                 update_user_meta($user_id, 'last_name', $data->athlete->lastName );
                 update_user_meta($user_id, 'phone', $data->athlete->phone );
+                update_user_meta($user_id, 'user_is_active', true );
         
         
                 $u = new WP_User($user_id);
@@ -130,6 +159,11 @@ class Athlete extends Controller{
                     'key' => 'trainer',
                     'value' => $trainer_id,
                     'compare' => '='
+                ),
+                array(
+                    'key' => 'user_is_active',
+                    'value' => false,
+                    'compare' => '!='
                 )
             ) 
         );

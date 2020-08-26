@@ -28,7 +28,7 @@ class Membership extends Controller{
                         
                         $attributes = array();
                         foreach ($product->get_attributes() as $_attributes) {
-                            $attributes[] = array( 
+                            $attributes[$_attributes->get_name()] = array( 
                                 'name' => $_attributes->get_name(),
                                 'value'=> $_attributes->get_options()[0]
                             );
@@ -54,10 +54,13 @@ class Membership extends Controller{
                 }
 
 
+
                 $subscription_data = json_decode( json_encode( $subscription->get_data(), true ) );
                 
                 $isRecurrent = (  $subscription_data->requires_manual_renewal === true ? false : true );
-                $planifications_plan_amount = (int)$subscription_product['attributes'][0]['value'];
+
+
+                $planifications_plan_amount = (int)$subscription_product['attributes']['planificaciones']['value'];
                 $planifications_actives = $this->Planification->get_active_planifications_by_trainer_id($trainer_id);
                 $asigned = $planifications_actives;
             
@@ -90,6 +93,9 @@ class Membership extends Controller{
                             'asigned' => $asigned,
                             'availables'=> $planifications_plan_amount - $asigned,
                             'total'=> $planifications_plan_amount
+                        ),
+                        'messages' => array(
+                            'total'=> (int)$subscription_product['attributes']['consultas']['value']
                         )   
                     )
 
@@ -151,6 +157,8 @@ class Membership extends Controller{
 
                             
                 $subscription_data = json_decode( json_encode( $subscription->get_data(), true ) );
+                
+                
 
                 $isRecurrent = (  $subscription_data->requires_manual_renewal === true ? false : true );
                 $isActive =  ( $subscription_data->status === 'active' ? true : false );

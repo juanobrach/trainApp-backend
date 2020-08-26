@@ -61,8 +61,22 @@ class Auth extends Controller{
                 return $error;
             }else{
 
+                // User exists, verify if it's an athlete and if it's status is active.
+
+                
                 $user_meta = get_user_meta( $user->data->ID);
                 $user_data = get_userdata( $user->data->ID );
+                
+                if( in_array( 'athlete', (array) $user_data->caps ) ){
+                        
+                    if( isset($user_meta['user_is_active']) && boolval($user_meta['user_is_active'][0])  !== true ){                        
+                        return   array(
+                            'error'=> true,
+                            'message'=> 'El usuario se encuentra inactivo'
+                        );
+                    }                
+                }
+
                 $user_address = get_usermeta(  $user->data->ID, 'address' );
 
                 $support_auth_user =  get_user_meta($data['user_id'],'support_auth_user', true);

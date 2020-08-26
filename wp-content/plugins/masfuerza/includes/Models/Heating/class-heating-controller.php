@@ -7,7 +7,10 @@ class Heating extends Controller{
 
     public function get_all_heatings(){
         $data = array();
-        $search_results = get_posts(array( 'post_type'=> 'heating'));
+        $search_results = get_posts(array(
+            'post_type'=> 'heating',
+            "posts_per_page" =>  -1
+        ));
         foreach( $search_results as $heating ){
 
             $heating_meta = get_post_meta($heating->ID);
@@ -45,7 +48,8 @@ class Heating extends Controller{
         $data = array();
         $search_results = get_posts(array( 
             'post_type'=> 'heating',
-            'post__in' => array($heatingId)
+            'post__in' => array($heatingId),
+            "posts_per_page" =>  -1,
         ));
 
         foreach( $search_results as $heating ){
