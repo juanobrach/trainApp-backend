@@ -22,8 +22,12 @@ class Program extends Controller{
 
         );
 
-        if( $author_id != null ) $args['post_author'] = (int)$author_id;
+        if( $author_id != null ){
+            $args['post_author'] = $author_id;
+        }
 
+        print_r($args);die;
+        
         $search_results = get_posts($args);
 
         $programs = array();
