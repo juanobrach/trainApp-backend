@@ -22,7 +22,7 @@ class Program extends Controller{
 
         );
 
-        if( $author_id != null ) $args['author'] = (int)$author_id;
+        if( $author_id != null ) $args['post_author'] = (int)$author_id;
 
         $search_results = get_posts($args);
 
