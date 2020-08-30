@@ -99,12 +99,14 @@ class Planification extends Controller{
 
             
 
+            
+
             $progress = array(
                 'daysCompleted'=> $completed_days,
                 'actualDay' => $actual_day,
                 'nextDay' => $next_day,
                 'actualWeek'=> $actual_week,
-                'completedWeeks'=> (int)$completed_weeks
+                'completedWeeks'=> $completed_weeks
             );
             $routinesName = array('A', 'B','C','D','E','F','G');
             $routines[$routine] = array(
@@ -163,7 +165,7 @@ class Planification extends Controller{
 
                 $note = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_note'][0]);
                 if(is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0] )){
-                    $dosage_id = (int) maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
+                    $dosage_id = (int) maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0])[0];
                 }else{
                     $dosage_id = (int)$data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0];
                 }
@@ -256,65 +258,88 @@ class Planification extends Controller{
         
 
     // }
-
+    /**
+     *  Update the progress of the specif routine by id.
+     *  return the updated routine progress
+     */
     public function update_progress($routine_id, $planification_id, $days_per_week){
-
         
         //print_r($planification_id);die;
         $data = array(
-            'finished'=> 0,
+            'finished'=> false,
             'data'=> array()
         );
-
+        
         $next_progress = array(); 
         $actual_progress = get_field('routines_planification_' . $routine_id . '_progress', $planification_id );
-        
-        // Completed day
-        $next_progress['actual_day'] = $actual_progress[0]['actual_day'] + 1;
-        $next_progress['next_day'] = $next_progress['actual_day'] + 1;
-        
-        // Convert string to array and then add new day
+        error_log( print_r($actual_progress, true),3, dirname(__FILE__) .'/progress.log' );
         $completed_days = $actual_progress[0]['completed_days'];
+        $completed_weeks = $actual_progress[0]['completed_weeks'];
+        $actual_day = $actual_progress[0]['actual_day'];
+        $actual_week = $actual_progress[0]['actual_week'];
 
+        
+        // Increase completed days a strings of days
         $completed_days_arr = preg_split("/[\s,]+/", $completed_days);
         if( $completed_days_arr[0] != "" ){
-            $completed_days_arr[] = $actual_progress[0]['actual_day'];
+            $completed_days_arr[] = $actual_day;
             $completed_days = implode(', ', $completed_days_arr);
         }else{
-            $completed_days = $actual_progress[0]['actual_day'];
+            $completed_days = $actual_day;
         }
+        $next_progress['completed_days']  = $completed_days;    
+        
 
-        $next_progress['completed_days']  = $completed_days;        
-        $completed_weeks = $actual_progress[0]['completed_weeks'];
-        
-        
-                        
-        // Completed week
-        if(  (int)$actual_progress[0]['actual_day'] === (int)$days_per_week ){
-            $next_progress['actual_week'] = $actual_progress[0]['actual_week'] + 1;
+        // It's not a week completed yet
+        if( $actual_day < $days_per_week ){
             
-            if( (int)$actual_progress[0]['actual_week']  === 0 ){
-                $completed_weeks = 1;
+            $next_progress['actual_day'] =  $actual_day + 1;
+            
+            // Next day could be equal to the max days per week allowed, so next day should be fixed to next day 2
+            if( (int)$next_progress['actual_day'] < (int)$days_per_week ){
+                $next_progress['next_day'] = $next_progress['actual_day'] + 1;
             }else{
-                if( $completed_weeks < 4 ){
-                    $completed_weeks += 1;
-                }
+                $next_progress['next_day'] = 1;
             }
-            
-            $next_progress['completed_days']  = $completed_days;        
-            $next_progress['completed_weeks'] = (int)$completed_weeks;            
-            $next_progress['actual_day'] = 1;
-            $next_progress['next_day'] = 2;
-            
+
+            // Same week, same actual week
+            $next_progress['completed_weeks'] = $completed_weeks;
+            $next_progress['actual_week'] = $actual_week;  
+
         }else{
-            $next_progress['completed_weeks'] = (int)$completed_weeks;
-            $next_progress['actual_week'] = $actual_progress[0]['actual_week'];            
-        }
-        
-        if(  (int)$next_progress['completed_weeks']  ===  4 ){
-            $data['finished'] = true;
-        }
-        
+            // It's a complete week
+            
+            // WEEKS STRING TO ARRAY
+            $completed_weeks_arr = preg_split("/[\s,]+/", $completed_weeks);
+                        
+            if( $completed_weeks_arr[0] != "" ){
+                $completed_weeks_arr[] = $actual_week;
+                // ARRAY TO STRING
+                $completed_weeks = implode(', ', $completed_weeks_arr);
+            }else{
+                $completed_weeks = $actual_week;                
+            }   
+            
+            
+            // Increase to a new week
+            $next_progress['actual_week'] =   $actual_week +  1;
+            $next_progress['completed_weeks'] = $completed_weeks;
+            
+            // Reset days, a new week is comming
+            $next_progress['actual_day'] = 1;
+            $next_progress['next_day'] = 2; 
+
+            // If completed weeks now are 4 it's a finished routine.
+            if(  (  count ( explode ( ',', $next_progress['completed_weeks'] ) ) ) ===  4 ){
+                $data['finished'] = true; 
+                $next_progress['actual_day'] = 1;
+                $next_progress['next_day'] = 2;
+                // Reset the actual week to 4 to avoid issues on the front end tabs selector.
+                $next_progress['actual_week'] = 4;
+            }
+        }                    
+   
+                
         $data['data'] = $next_progress;
         return $data;
     }
@@ -370,7 +395,7 @@ class Planification extends Controller{
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
                 'progress'=> array( $progress ),
-                'active' => ($routines_data['active'] === true ? 1 : 0)
+                'active'=> $routines_data['active']
             );
             
         }
@@ -394,6 +419,34 @@ class Planification extends Controller{
 
     }
 
+    public function all_routines_finished($planification_id){
+
+        $routines_data  = get_field('routines_planification', $planification_id );
+
+        $actives_routines_amount = count($routines_data) ;
+        error_log( "routines $actives_routines_amount \n",3, dirname(__FILE__) .'/progress.log' );
+
+        
+        
+        foreach( $routines_data as $routine ){
+        
+            $routine_progress =  $routine['progress'][0];
+
+            $completed_weeks_arr = preg_split("/[\s,]+/", $routine_progress['completed_weeks'] );
+            if( (int) count( $completed_weeks_arr )>= 4 ){
+                $actives_routines_amount--;
+            }
+        }
+
+        if( $actives_routines_amount <= 0){
+            //  All routines are finished
+            return true;
+        }else{
+            // Some routine are not finished yet :)
+            return false;
+        }
+    }
+
      /**
      *  Update planification
      */
@@ -414,15 +467,20 @@ class Planification extends Controller{
         if($finishDay === true ){
             $days_per_week = $routines[$routineId]['days_per_week'];              
             $progress = $this->update_progress($routineId, $planification_id, $days_per_week);
+            update_field( "routines_planification_".$routineId."_progress", array( $progress['data'] ) ,  (int)$planification_id );    
             
-            
-            update_field( "routines_planification_".$routineId."_progress", array( $progress['data'] ) ,  (int)$planification_id );          
             if( $progress['finished'] === true ){
+                update_field( "routines_planification_".$routineId."_active", 0,  (int)$planification_id );
+            }
+            
+            
+            
+            if( $this->all_routines_finished($planification_id) ){
                 update_field( "planification_active", 0 ,  (int)$planification_id );
                 update_field( "planification_finished", 1 ,  (int)$planification_id );
             }
 
-            $routines[$routineId]['progress'][0] = $progress['data'];             
+            $routines[$routineId]['progress'][0] = $progress['data'];  
         }
 
 
@@ -686,10 +744,8 @@ class Planification extends Controller{
                     'actual_day'=> '1',
                     'next_day'=> '2',
                     'actual_week'=> '1',
-                    'completed_weeks'=> '',
-                    'active'=> false,
+                    'completed_weeks'=> ''
                 ),
-                'active'=> true,
                 'finished'=>false
             );
         }
