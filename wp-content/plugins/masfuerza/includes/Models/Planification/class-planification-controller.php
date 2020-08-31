@@ -346,7 +346,7 @@ class Planification extends Controller{
 
     public function map_planification_fields($planification_data, $is_new = false ){        
         $routines = array();
-
+        
         foreach($planification_data['routines'] as $routines_data ){
                                 
             $workouts = array();
@@ -381,20 +381,35 @@ class Planification extends Controller{
 
             }
 
-            $progress = array(
-                'completed_days' => '',
-                'next_day'=>2,
-                'actual_day'=>1,
-                'actual_week'=>1,
-                'completed_weeks'=> ''
-            );
+            if( $is_new === true ){ 
+                $progress = array(
+                    array(
+                        'completed_days' => '',
+                        'next_day'=>2,
+                        'actual_day'=>1,
+                        'actual_week'=>1,
+                        'completed_weeks'=> ''
+                    )
+                );
+
+            }else{
+                
+                $actual_progress = get_field('routines_planification_' . $routines_data['id'] . '_progress', $planification_data['id'] );                
+                $progress = $actual_progress;
+                error_log("is not new, progress is \n", 3);
+                error_log( print_r($progress, true),3, dirname(__FILE__) .'/progress.log' );
+            }
+
+
+
+
 
             $routines[] = array(
                 'id'=> $routines_data['id'],
                 'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
-                'progress'=> array( $progress ),
+                'progress'=> $progress,
                 'active'=> ( $is_new ? true : $routines_data['active'] )
             );
             
@@ -402,19 +417,11 @@ class Planification extends Controller{
 
         
 
-        $athletes = array();
-        
-        foreach ($program_data['athletes'] as $athlete ) {
-            $athletes[] = $athlete['id'];
-        }
-            
-
         $program = array(
-            'id'=> $program_data['id'],
+            'id'=> $planification_data['id'],
             'routines'=> $routines
 
-        );
-
+        );        
         return $program;
 
     }
@@ -454,8 +461,7 @@ class Planification extends Controller{
         // Update Routine
 
         
-        
-        $planification = $this->map_planification_fields($new_planification);
+        $planification = $this->map_planification_fields($new_planification, false);
         
 
         // print_r($planification);die;
