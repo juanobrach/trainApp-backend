@@ -344,7 +344,7 @@ class Planification extends Controller{
         return $data;
     }
 
-    public function map_planification_fields($planification_data){        
+    public function map_planification_fields($planification_data, $is_new = false ){        
         $routines = array();
 
         foreach($planification_data['routines'] as $routines_data ){
@@ -395,7 +395,7 @@ class Planification extends Controller{
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
                 'progress'=> array( $progress ),
-                'active'=> $routines_data['active']
+                'active'=> ( $is_new ? true : $routines_data['active'] )
             );
             
         }
@@ -779,8 +779,8 @@ class Planification extends Controller{
         // discount 1 plan available from trainer data
         
             
-        
-        $planification_data =  $this->map_planification_fields($planification);
+        $is_new = true;
+        $planification_data =  $this->map_planification_fields($planification, $is_new);
         $routines = $planification_data['routines'];
 
         
