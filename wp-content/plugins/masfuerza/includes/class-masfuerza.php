@@ -228,6 +228,7 @@ class Masfuerza {
 		$masFuerza_posts = new Masfuerza_Posts();
 		$masFuerza_api   = new Masfuerza_Api();
 		$masFuerza_cron = new Masfuerza_Cron();
+		$masFuerza_wc = new Membership();
 
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
