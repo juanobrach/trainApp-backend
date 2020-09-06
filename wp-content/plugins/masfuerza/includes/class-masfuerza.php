@@ -247,6 +247,7 @@ class Masfuerza {
 
 		// When a trainner are on a form in order to crete a program, he can only select their own athletes users
 		$this->loader->add_filter( 'acf/fields/user/query', $masFuerza_posts, 'get_own_trainer_athletes', 10, 3 );
+		$this->loader->add_filter( 'woocommerce_new_customer_data', $masFuerza_wc, 'wc_assign_custom_role', 10, 3 );
 
 		// When the user traineer save a new user, create a relationship between user adding a metadata to the new user.
 		$this->loader->add_action('user_register', $masFuerza_posts, 'registration_save', 10, 1);

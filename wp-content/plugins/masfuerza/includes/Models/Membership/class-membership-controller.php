@@ -11,7 +11,11 @@ class Membership extends Controller{
 
     }
 
-
+    public function wc_assign_custom_role($args){
+        $args['role'] = 'trainer';
+        return $args;
+    }
+    
     public function get_subscription_by_trainer_id($trainer_id){
         $subscription;
         $subscription_product;
