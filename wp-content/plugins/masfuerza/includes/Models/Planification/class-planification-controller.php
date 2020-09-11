@@ -109,6 +109,9 @@ class Planification extends Controller{
                 'completedWeeks'=> $completed_weeks
             );
             $routinesName = array('A', 'B','C','D','E','F','G');
+
+ 
+
             $routines[$routine] = array(
                 'id'=> $routine,
                 'name'=>$routinesName[$routine],
@@ -116,8 +119,37 @@ class Planification extends Controller{
                 'warmUpId' => $heating_id,
                 'warmUpName'=> $heating_data['title'],
                 'totalExercises'=> $workouts_amount,
+                'aditionalsWorkouts' => array(
+                    'note'=> '',
+                    'exercises'=> array()
+                ),
                 'progress'=>  $progress,
                 'active'=>  ($routine_active === 1 ? true : false)
+            );
+            
+            $routines[$routine]['aditionalsWorkouts'] = array(
+                'note' => $data['routines_planification_'.$routine.'_final_0_final_note'][0],
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_planification_'.$routine.'_final_0_workout_1'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_planification_'.$routine.'_final_0_workout_1'][0],
+                'name'=> $workout_data['title'],
+                'index'=>1
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_planification_'.$routine.'_final_0_workout_2'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_planification_'.$routine.'_final_0_workout_2'][0],
+                'name'=> $workout_data['title'],
+                'index'=>2
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_planification_'.$routine.'_final_0_workout_3'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_planification_'.$routine.'_final_0_workout_3'][0],
+                'name'=> $workout_data['title'],
+                'index'=>3
             );
 
 
@@ -402,13 +434,19 @@ class Planification extends Controller{
 
 
 
-
+            $aditional_workouts = array(
+                'note' => $routines_data['aditionalsWorkouts']['note'],
+                'workout_1' => $routines_data['aditionalsWorkouts']['exercises'][0]['id'],
+                'workout_2' => $routines_data['aditionalsWorkouts']['exercises'][1]['id'],
+                'workout_3' => $routines_data['aditionalsWorkouts']['exercises'][2]['id'],
+            );
 
             $routines[] = array(
                 'id'=> $routines_data['id'],
                 'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
+                'aditionalsWorkouts'=> array($aditional_workouts),
                 'progress'=> $progress,
                 'active'=> ( $is_new ? true : $routines_data['active'] )
             );
@@ -834,6 +872,8 @@ class Planification extends Controller{
             }
         }
 
+
+        // TODO: SEND email notification to the athlete
         $planification = $this->get_planification_by_id($planification_id);
         echo  json_encode( $planification );      
         return;
