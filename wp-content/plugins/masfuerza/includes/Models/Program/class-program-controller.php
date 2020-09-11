@@ -476,7 +476,7 @@ class Program extends Controller{
             }
 
             $aditional_workouts = array(
-                'note' => $routines_data['aditionalsWorkouts']['note'],
+                'final_note' => $routines_data['aditionalsWorkouts']['note'],
                 'workout_1' => $routines_data['aditionalsWorkouts']['exercises'][0]['id'],
                 'workout_2' => $routines_data['aditionalsWorkouts']['exercises'][1]['id'],
                 'workout_3' => $routines_data['aditionalsWorkouts']['exercises'][2]['id'],
@@ -657,7 +657,6 @@ class Program extends Controller{
         
         // update_sub_field( "routines_".($routine_id) - 1 ."_workouts",  $workouts ,  $program_id );
          // add_row( array('routines', $routine_id, 'workouts', $workouts ), $program_id );
-         print_r($workouts);die;
          
          // var_dump($add_workout);die;
  

@@ -435,21 +435,23 @@ class Planification extends Controller{
 
 
             $aditional_workouts = array(
-                'note' => $routines_data['aditionalsWorkouts']['note'],
+                'final_note' => $routines_data['aditionalsWorkouts']['note'],
                 'workout_1' => $routines_data['aditionalsWorkouts']['exercises'][0]['id'],
                 'workout_2' => $routines_data['aditionalsWorkouts']['exercises'][1]['id'],
                 'workout_3' => $routines_data['aditionalsWorkouts']['exercises'][2]['id'],
             );
 
+            
             $routines[] = array(
                 'id'=> $routines_data['id'],
                 'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
-                'aditionalsWorkouts'=> array($aditional_workouts),
+                'final'=> array($aditional_workouts),
                 'progress'=> $progress,
                 'active'=> ( $is_new ? true : $routines_data['active'] )
             );
+
             
         }
 
@@ -641,6 +643,7 @@ class Planification extends Controller{
             $error = new WP_Error( '001', 'Excediste la cantidad maxima de dias por semana para una planificacion', 'Some information' );
             return wp_send_json_error($error);
         }else{                
+            
                 add_row('routines_planification', $routine_data, $planification_id);
                 //code...
         }
