@@ -4,6 +4,106 @@ class Athlete extends Controller{
 
     public function __construct(){}
 
+    public function athlete_stats($athlete_id){
+        $Planification = new Planification();
+        $planifications   = $Planification->get_planification_by_athlete_id($athlete_id);
+
+        $exercises_completed = 0;
+        $trainer_days_completed = 0;
+        $total_exercises = array();
+        $max_charge = 0;
+
+        foreach($planifications as $planification){
+            $routines = $planification['routines'];
+            $max_charge_planification = 0;
+
+            $max_charge_routine = 0;
+            foreach($routines as $routine){
+                $progress = $routine['progress'];
+                
+                $days_completed = $progress['daysCompleted'];
+                $completed_weeks = $progress['completedWeeks'];
+                
+                if($days_completed > 0 ){
+                    $days = explode(',',$days_completed);
+                    $trainer_days_completed += count($days);
+                }else{
+                    $days = array();
+                }
+                
+
+
+
+                $exercises = $routine['exercises'];
+                
+                foreach( $exercises as $exercise ){
+                    // Count unique exercises
+                    
+
+                    $dosage = $exercise['dosings'];
+                
+                    $max_charge_exercise = 0;
+                    // Only iterate over completed weeks and days
+
+                    if( $completed_weeks ){
+                        $weeks = explode(',',$completed_weeks);
+                    }else{
+                        $weeks = array();
+                    }
+                    
+                    if($days_completed > 0 ){
+                        $days = explode(',',$days_completed);
+                    }else{
+                        $days = array();
+                    }
+                    
+                    if( count($days) > 0 ){
+                        if(!in_array($exercise['id'], $total_exercises)){
+                            $total_exercises[] = $exercise['id'];
+                        }
+                        if( count( $weeks ) >0 ){
+                            foreach ($weeks as $week) {
+                                foreach ($days as $day ) {
+                                    $charge = $dosage['weeks'][$week-1]['days'][$day-1]['charge'];
+                                    if( $max_charge_exercise < $charge ){
+                                        $max_charge_exercise = $charge;
+                                    }
+
+                                    if( $max_charge_routine < $charge ){
+                                        $max_charge_routine = $charge;
+                                    }
+                                }
+                            }
+                        }else{   
+                        
+                            foreach ($days as $day ) {
+                                $charge = $dosage['weeks'][0]['days'][$day-1]['charge'];                                
+                                if( $max_charge_exercise < $charge ){
+                                    $max_charge_exercise = $charge;
+                                }
+                                
+                                if( $max_charge_routine < $charge ){
+                                    $max_charge_routine = $charge;
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+                
+            }
+            if(  $max_charge < $max_charge_routine ){
+                $max_charge = $max_charge_routine;
+            }
+        }
+
+        return
+            array(
+                'max_charge' => (int)$max_charge,
+                'days_completed' => (int)$trainer_days_completed,
+                'exercises_total' => (int) count( $total_exercises)
+            );
+    }
 
     public function desactivate_athlete($athlete_id){
         $Planification = new Planification();
@@ -31,8 +131,6 @@ class Athlete extends Controller{
         return true;
     }
 
-    
-
     public function get_athlete_data($athlete_id){        
         $Planification = new Planification();
         $planifications;
@@ -42,10 +140,10 @@ class Athlete extends Controller{
         
         return array(
             'planifications'=> $planifications,
-            'trainer' => $trainer
+            'trainer' => $trainer,
+            'stats'=> $this->athlete_stats($athlete_id)
         );
     }
-
 
     public function create_athlete($data){
         $log_file_dir =  ABSPATH . "wp-content/plugins/masfuerza/includes/Logs/Mails/mails.json";
@@ -122,7 +220,6 @@ class Athlete extends Controller{
 
     }
 
-
     public function get_athlete_by_id($id){
 
         $results = get_user_by('ID', $id);
@@ -173,6 +270,7 @@ class Athlete extends Controller{
 
             foreach( $results as $athlete_data ){
                 $user_meta = get_user_meta($athlete_data->data->ID);
+                $athlete = $this->get_athlete_by_id($athlete_data->data->ID);
 
                 $athlete = array(
                     'id' => $athlete_data->data->ID,
@@ -180,6 +278,7 @@ class Athlete extends Controller{
                     'lastName' => $user_meta['last_name'][0],
                     'phone' => $user_meta['phone'][0],                    
                     'email' => $athlete_data->data->user_email,
+                    'stats' => $this->athlete_stats($athlete_data->data->ID)
                 );         
                 $athletes[] = $athlete;        
             }
@@ -211,9 +310,6 @@ class Athlete extends Controller{
 
         return $trainer;           
     }
-
-
-
 
 
 }

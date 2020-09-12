@@ -39,9 +39,21 @@ class AthleteAPI {
             'callback' => array($this, 'handle_activate_athlete'),
         ));
 
+        register_rest_route( 'masfuerza/v1', '/athlete/stats', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_athlete_stats'),
+        ));
+
 
 
         
+
+    }
+
+    public function handle_athlete_stats($request){
+        $data = json_decode ( $request->get_body() );        
+        $athlete_id = $data->athlete_id;       
+        return $this->athlete->athlete_stats($athlete_id);
 
     }
 

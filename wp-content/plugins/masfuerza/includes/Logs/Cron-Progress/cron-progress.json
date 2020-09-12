@@ -75,5 +75,24 @@
                 "routine_id": 1
             }
         ]
+    },
+    {
+        "planification_id": 3532,
+        "routines": [
+            {
+                "routine_id": 0
+            }
+        ]
+    },
+    {
+        "planification_id": 3532,
+        "routines": [
+            {
+                "routine_id": 0
+            },
+            {
+                "routine_id": 1
+            }
+        ]
     }
 ]
