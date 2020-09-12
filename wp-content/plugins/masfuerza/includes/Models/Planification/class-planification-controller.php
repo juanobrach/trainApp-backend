@@ -878,6 +878,16 @@ class Planification extends Controller{
 
         // TODO: SEND email notification to the athlete
         $planification = $this->get_planification_by_id($planification_id);
+        $Athlete = new Athlete();
+        $athlete_data = $Athlete->get_athlete_by_id($athlete_id);
+
+        ob_start();
+        include('template/email-header.php');
+        printf(__('<p>Tu entrenador te ha creado una planificacion</p>', 'masfuerza'));
+        printf(__('<p>Ingresa a la app http://trainapp.masfuerza.net para comenzar ahora</p>', 'masfuerza'));
+        $message = ob_get_contents();
+        ob_end_clean();
+        wp_mail($athlete_data['email'], "Te han asignado una planificacion", $message);
         echo  json_encode( $planification );      
         return;
 
