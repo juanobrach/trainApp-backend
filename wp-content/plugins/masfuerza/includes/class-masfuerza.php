@@ -228,6 +228,7 @@ class Masfuerza {
 		$masFuerza_posts = new Masfuerza_Posts();
 		$masFuerza_api   = new Masfuerza_Api();
 		$masFuerza_cron = new Masfuerza_Cron();
+		$masFuerza_wc = new Membership();
 
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
@@ -235,7 +236,7 @@ class Masfuerza {
 		$this->loader->add_action( 'load-post.php', $masFuerza_posts, 'on_edit_post');
 
 		$this->loader->add_action( 'acf/save_post', $masFuerza_posts, 'custom_type_save_post', 20 );
-		$this->loader->add_action( 'admin_head-post.php', $masFuerza_posts, 'check_for_notice' );
+		//$this->loader->add_action( 'admin_head-post.php', $masFuerza_posts, 'check_for_notice' );
 		$this->loader->add_action( 'rest_api_init', $masFuerza_api, 'init_api' );
 				
 
@@ -247,6 +248,7 @@ class Masfuerza {
 
 		// When a trainner are on a form in order to crete a program, he can only select their own athletes users
 		$this->loader->add_filter( 'acf/fields/user/query', $masFuerza_posts, 'get_own_trainer_athletes', 10, 3 );
+		$this->loader->add_filter( 'woocommerce_new_customer_data', $masFuerza_wc, 'wc_assign_custom_role', 10, 3 );
 
 		// When the user traineer save a new user, create a relationship between user adding a metadata to the new user.
 		$this->loader->add_action('user_register', $masFuerza_posts, 'registration_save', 10, 1);

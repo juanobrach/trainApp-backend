@@ -23,7 +23,7 @@ class Trainer extends Controller {
         $membership;
 
         $athletes   = $this->Athlete->get_athletes_by_trainer($trainer_id);
-        $programs   = $this->Program->get_programs();
+        $programs   = $this->Program->get_programs($trainer_id);
         $membership = $this->Membership->get_subscription_by_trainer_id($trainer_id);
         $planifications = $Planification->get_planifications_by_trainer_id($trainer_id);        
         // TODO: tickets use a lot of space on localStorage. Use indexdb instead or capacitor LocalForage.

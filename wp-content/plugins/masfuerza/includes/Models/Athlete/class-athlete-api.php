@@ -29,10 +29,46 @@ class AthleteAPI {
             'callback' => array($this, 'handle_get_athlete_data'),
         ));
 
+        register_rest_route( 'masfuerza/v1', '/athlete/desactivate_athlete', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_desactivate_athlete'),
+        ));
+
+        register_rest_route( 'masfuerza/v1', '/athlete/activate_athlete', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_activate_athlete'),
+        ));
+
+        register_rest_route( 'masfuerza/v1', '/athlete/stats', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_athlete_stats'),
+        ));
+
+
 
         
 
     }
+
+    public function handle_athlete_stats($request){
+        $data = json_decode ( $request->get_body() );        
+        $athlete_id = $data->athlete_id;       
+        return $this->athlete->athlete_stats($athlete_id);
+
+    }
+
+
+    public function handle_desactivate_athlete($request){
+        $data = json_decode ( $request->get_body() );        
+        $athlete_id = $data->athlete_id;       
+        return $this->athlete->desactivate_athlete($athlete_id);
+     }
+
+     public function handle_activate_athlete($request){
+        $data = json_decode ( $request->get_body() );        
+        $athlete_id = $data->athlete_id;       
+        return $this->athlete->activate_athlete($athlete_id);
+     }
 
     public function handle_get_athlete_data($request){
         $data = json_decode ( $request->get_body() );

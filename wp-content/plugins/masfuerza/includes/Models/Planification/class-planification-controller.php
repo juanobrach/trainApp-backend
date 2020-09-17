@@ -16,6 +16,7 @@ class Planification extends Controller{
     public function get_planifications($author_id=null, $athlete_id=null){
         $args = array(
             'post_type'        => 'planification',
+            'post_status'      => 'publish',
             'posts_per_page'   => -1,
         );
 
@@ -34,6 +35,14 @@ class Planification extends Controller{
         }
 
         return $planifications;
+    }
+
+    public function desactivate_planification_by_id($id){
+        $planification = array(
+            'ID'=> $id,
+            'post_status'   => 'draft',
+        );
+        return wp_update_post( $planification );
     }
 
 
@@ -90,6 +99,8 @@ class Planification extends Controller{
 
             
 
+            
+
             $progress = array(
                 'daysCompleted'=> $completed_days,
                 'actualDay' => $actual_day,
@@ -98,6 +109,9 @@ class Planification extends Controller{
                 'completedWeeks'=> $completed_weeks
             );
             $routinesName = array('A', 'B','C','D','E','F','G');
+
+ 
+
             $routines[$routine] = array(
                 'id'=> $routine,
                 'name'=>$routinesName[$routine],
@@ -105,8 +119,37 @@ class Planification extends Controller{
                 'warmUpId' => $heating_id,
                 'warmUpName'=> $heating_data['title'],
                 'totalExercises'=> $workouts_amount,
+                'aditionalsWorkouts' => array(
+                    'note'=> '',
+                    'exercises'=> array()
+                ),
                 'progress'=>  $progress,
                 'active'=>  ($routine_active === 1 ? true : false)
+            );
+            
+            $routines[$routine]['aditionalsWorkouts'] = array(
+                'note' => $data['routines_planification_'.$routine.'_final_0_final_note'][0],
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_planification_'.$routine.'_final_0_workout_1'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_planification_'.$routine.'_final_0_workout_1'][0],
+                'name'=> $workout_data['title'],
+                'index'=>1
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_planification_'.$routine.'_final_0_workout_2'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_planification_'.$routine.'_final_0_workout_2'][0],
+                'name'=> $workout_data['title'],
+                'index'=>2
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_planification_'.$routine.'_final_0_workout_3'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_planification_'.$routine.'_final_0_workout_3'][0],
+                'name'=> $workout_data['title'],
+                'index'=>3
             );
 
 
@@ -147,15 +190,20 @@ class Planification extends Controller{
                 $workout_data = array();
                 if((int) $workout_id > 1 ){
                     $workout_data = $this->get_data( 'exercise', $workout_id );
-                    
                 }
+
+                
+                
 
                 $note = maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_note'][0]);
                 if(is_serialized( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0] )){
-                    $dosage_id = (int) maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0]);
+                    $dosage_id = (int) maybe_unserialize( $data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0])[0];
                 }else{
                     $dosage_id = (int)$data['routines_planification_'.$routine.'_workouts_'.$workout.'_dosage_0_id'][0];
                 }
+
+                //print_r($data);die;
+                
 
                 $min_weeks = 4;
                 $dosings = array();
@@ -176,8 +224,8 @@ class Planification extends Controller{
                     }
                     $weeks[] = $week_data;
                 }
-                $exercise_name = $workout_data['name'][0];
-                $super_workout_name = $super_workout_data['name'][0];
+                $exercise_name = $workout_data['title'];
+                $super_workout_name = $super_workout_data['title'];
                 
                 $dosage_data = $this->get_data( 'dosing', $dosage_id );
                 
@@ -242,66 +290,95 @@ class Planification extends Controller{
         
 
     // }
-
+    /**
+     *  Update the progress of the specif routine by id.
+     *  return the updated routine progress
+     */
     public function update_progress($routine_id, $planification_id, $days_per_week){
-//print_r($planification_id);die;
+        
+        //print_r($planification_id);die;
         $data = array(
-            'finished'=> 0,
+            'finished'=> false,
             'data'=> array()
         );
-
+        
         $next_progress = array(); 
         $actual_progress = get_field('routines_planification_' . $routine_id . '_progress', $planification_id );
-        
-        // Completed day
-        $next_progress['actual_day'] = $actual_progress[0]['actual_day'] + 1;
-        $next_progress['next_day'] = $next_progress['actual_day'] + 1;
-
-        // Convert string to array and then add new day
+        error_log( print_r($actual_progress, true),3, dirname(__FILE__) .'/progress.log' );
         $completed_days = $actual_progress[0]['completed_days'];
+        $completed_weeks = $actual_progress[0]['completed_weeks'];
+        $actual_day = $actual_progress[0]['actual_day'];
+        $actual_week = $actual_progress[0]['actual_week'];
 
+        
+        // Increase completed days a strings of days
         $completed_days_arr = preg_split("/[\s,]+/", $completed_days);
         if( $completed_days_arr[0] != "" ){
-            $completed_days_arr[] = $actual_progress[0]['actual_day'];
+            $completed_days_arr[] = $actual_day;
             $completed_days = implode(', ', $completed_days_arr);
         }else{
-            $completed_days = $actual_progress[0]['actual_day'];
-        }        
-        $next_progress['completed_days']  = $completed_days;        
-        $completed_weeks = $actual_progress[0]['completed_weeks'];
+            $completed_days = $actual_day;
+        }
+        $next_progress['completed_days']  = $completed_days;    
         
-        
-        // Completed week
-        if(  (int)$actual_progress[0]['actual_day'] === (int)$days_per_week ){
-            $next_progress['actual_week'] = $actual_progress[0]['actual_week'] + 1;
-           
-            // WEEKS STRING
+
+        // It's not a week completed yet
+        if( $actual_day < $days_per_week ){
+            
+            $next_progress['actual_day'] =  $actual_day + 1;
+            
+            // Next day could be equal to the max days per week allowed, so next day should be fixed to next day 2
+            if( (int)$next_progress['actual_day'] < (int)$days_per_week ){
+                $next_progress['next_day'] = $next_progress['actual_day'] + 1;
+            }else{
+                $next_progress['next_day'] = 1;
+            }
+
+            // Same week, same actual week
+            $next_progress['completed_weeks'] = $completed_weeks;
+            $next_progress['actual_week'] = $actual_week;  
+
+        }else{
+            // It's a complete week
+            
+            // WEEKS STRING TO ARRAY
             $completed_weeks_arr = preg_split("/[\s,]+/", $completed_weeks);
+                        
             if( $completed_weeks_arr[0] != "" ){
-                $completed_weeks_arr[] = $actual_progress[0]['actual_week'];
+                $completed_weeks_arr[] = $actual_week;
+                // ARRAY TO STRING
                 $completed_weeks = implode(', ', $completed_weeks_arr);
             }else{
-                $completed_weeks = $actual_progress[0]['actual_week'];
+                $completed_weeks = $actual_week;                
             }   
-
-            $next_progress['completed_days']  = $completed_days;        
-            $next_progress['completed_weeks'] = $completed_weeks;            
+            
+            
+            // Increase to a new week
+            $next_progress['actual_week'] =   $actual_week +  1;
+            $next_progress['completed_weeks'] = $completed_weeks;
+            
+            // Reset days, a new week is comming
             $next_progress['actual_day'] = 1;
-            $next_progress['next_day'] = 2;
+            $next_progress['next_day'] = 2; 
 
-        }
-        
-        if(  (  count ( explode ( ',', $next_progress['completed_weeks'] ) ) ) ===  4 ){
-            $data['finished'] = true;
-        }
-
+            // If completed weeks now are 4 it's a finished routine.
+            if(  (  count ( explode ( ',', $next_progress['completed_weeks'] ) ) ) ===  4 ){
+                $data['finished'] = true; 
+                $next_progress['actual_day'] = 1;
+                $next_progress['next_day'] = 2;
+                // Reset the actual week to 4 to avoid issues on the front end tabs selector.
+                $next_progress['actual_week'] = 4;
+            }
+        }                    
+   
+                
         $data['data'] = $next_progress;
         return $data;
     }
 
-    public function map_planification_fields($planification_data){        
+    public function map_planification_fields($planification_data, $is_new = false ){        
         $routines = array();
-
+        
         foreach($planification_data['routines'] as $routines_data ){
                                 
             $workouts = array();
@@ -336,58 +413,121 @@ class Planification extends Controller{
 
             }
 
-            $progress = array(
-                'completed_days' => '',
-                'next_day'=>2,
-                'actual_day'=>1,
-                'actual_week'=>1,
-                'completed_weeks'=> ''
+            if( $is_new === true ){ 
+                $progress = array(
+                    array(
+                        'completed_days' => '',
+                        'next_day'=>2,
+                        'actual_day'=>1,
+                        'actual_week'=>1,
+                        'completed_weeks'=> ''
+                    )
+                );
+
+            }else{
+                
+                $actual_progress = get_field('routines_planification_' . $routines_data['id'] . '_progress', $planification_data['id'] );                
+                $progress = $actual_progress;
+                error_log("is not new, progress is \n", 3);
+                error_log( print_r($progress, true),3, dirname(__FILE__) .'/progress.log' );
+            }
+
+
+
+            $aditional_workouts = array(
+                'final_note' => $routines_data['aditionalsWorkouts']['note'],
+                'workout_1' => $routines_data['aditionalsWorkouts']['exercises'][0]['id'],
+                'workout_2' => $routines_data['aditionalsWorkouts']['exercises'][1]['id'],
+                'workout_3' => $routines_data['aditionalsWorkouts']['exercises'][2]['id'],
             );
 
+            
             $routines[] = array(
                 'id'=> $routines_data['id'],
                 'days_per_week' => (int)$routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
-                'progress'=> array( $progress ),
-                'active' => ($routines_data['active'] === true ? 1 : 0)
+                'final'=> array($aditional_workouts),
+                'progress'=> $progress,
+                'active'=> ( $is_new ? true : $routines_data['active'] )
             );
+
             
         }
 
         
-
-        $athletes = array();
-        
-        foreach ($program_data['athletes'] as $athlete ) {
-            $athletes[] = $athlete['id'];
-        }
-            
 
         $program = array(
-            'id'=> $program_data['id'],
+            'id'=> $planification_data['id'],
             'routines'=> $routines
 
-        );
-
+        );        
         return $program;
 
+    }
+
+    public function all_routines_finished($planification_id){
+
+        $routines_data  = get_field('routines_planification', $planification_id );
+
+        $actives_routines_amount = count($routines_data) ;
+        error_log( "routines $actives_routines_amount \n",3, dirname(__FILE__) .'/progress.log' );
+
+        
+        
+        foreach( $routines_data as $routine ){
+        
+            $routine_progress =  $routine['progress'][0];
+
+            $completed_weeks_arr = preg_split("/[\s,]+/", $routine_progress['completed_weeks'] );
+            if( (int) count( $completed_weeks_arr )>= 4 ){
+                $actives_routines_amount--;
+            }
+        }
+
+        if( $actives_routines_amount <= 0){
+            //  All routines are finished
+            return true;
+        }else{
+            // Some routine are not finished yet :)
+            return false;
+        }
     }
 
      /**
      *  Update planification
      */
-    public function update_planification($new_planification, $planification_id ){
+    public function update_planification($new_planification, $planification_id, $finishDay, $routineId ){
         // Update Routine
 
         
-        $planification = $this->map_planification_fields($new_planification);
+        $planification = $this->map_planification_fields($new_planification, false);
+        
 
         // print_r($planification);die;
         
 
         
         $routines = $planification['routines'];
+        
+        if($finishDay === true ){
+            $days_per_week = $routines[$routineId]['days_per_week'];              
+            $progress = $this->update_progress($routineId, $planification_id, $days_per_week);
+            update_field( "routines_planification_".$routineId."_progress", array( $progress['data'] ) ,  (int)$planification_id );    
+            
+            if( $progress['finished'] === true ){
+                update_field( "routines_planification_".$routineId."_active", 0,  (int)$planification_id );
+            }
+            
+            
+            
+            if( $this->all_routines_finished($planification_id) ){
+                update_field( "planification_active", 0 ,  (int)$planification_id );
+                update_field( "planification_finished", 1 ,  (int)$planification_id );
+            }
+
+            $routines[$routineId]['progress'][0] = $progress['data'];  
+        }
 
 
         $planification_post = array(
@@ -432,6 +572,7 @@ class Planification extends Controller{
 
         }
 
+      
         echo json_encode ( $this->get_planification_by_id(  $planification_id  ) );
         return ;
 
@@ -451,6 +592,8 @@ class Planification extends Controller{
         $this->create_routine( $routine, $routines, $planification_id );
 
     }
+
+
 
 
     /**
@@ -500,6 +643,7 @@ class Planification extends Controller{
             $error = new WP_Error( '001', 'Excediste la cantidad maxima de dias por semana para una planificacion', 'Some information' );
             return wp_send_json_error($error);
         }else{                
+            
                 add_row('routines_planification', $routine_data, $planification_id);
                 //code...
         }
@@ -554,7 +698,7 @@ class Planification extends Controller{
         // delete_row( 'routines_0_workouts_0_workout', 1 ,$planification_id);
         $deleted = delete_row( 'routines_'.($routine_row_number - 1 ).'_workouts', $workout_row_number ,$planification_id  );
 
-        print_r($deleted);die;
+        //print_r($deleted);die;
     }
 
 
@@ -647,10 +791,8 @@ class Planification extends Controller{
                     'actual_day'=> '1',
                     'next_day'=> '2',
                     'actual_week'=> '1',
-                    'completed_weeks'=> '',
-                    'active'=> false,
+                    'completed_weeks'=> ''
                 ),
-                'active'=> true,
                 'finished'=>false
             );
         }
@@ -684,8 +826,8 @@ class Planification extends Controller{
         // discount 1 plan available from trainer data
         
             
-        
-        $planification_data =  $this->map_planification_fields($planification);
+        $is_new = true;
+        $planification_data =  $this->map_planification_fields($planification, $is_new);
         $routines = $planification_data['routines'];
 
         
@@ -733,7 +875,19 @@ class Planification extends Controller{
             }
         }
 
+
+        // TODO: SEND email notification to the athlete
         $planification = $this->get_planification_by_id($planification_id);
+        $Athlete = new Athlete();
+        $athlete_data = $Athlete->get_athlete_by_id($athlete_id);
+
+        ob_start();
+        include('template/email-header.php');
+        printf(__('<p>Tu entrenador te ha creado una planificacion</p>', 'masfuerza'));
+        printf(__('<p>Ingresa a la app http://trainapp.masfuerza.net para comenzar ahora</p>', 'masfuerza'));
+        $message = ob_get_contents();
+        ob_end_clean();
+        wp_mail($athlete_data['email'], "Te han asignado una planificacion", $message);
         echo  json_encode( $planification );      
         return;
 
@@ -766,9 +920,7 @@ class Planification extends Controller{
         $args = array(
             'post_author'        =>  $trainer_id,
             'numberposts' =>  -1,
-            'post_type'		=> 'planification',
-            'meta_key'		=> 'planification_active',
-            'meta_value'	=> 1
+            'post_type'		=> 'planification'
         );
 
         $wp_planifications = get_posts( $args );   
@@ -799,7 +951,7 @@ class Planification extends Controller{
     public function asign_routine($data){
         $planification_id = $data['planification_id'];
         $routine_id = $data['routine_id'];
-        print_r($data);die;
+        //print_r($data);die;
     }
 
 }

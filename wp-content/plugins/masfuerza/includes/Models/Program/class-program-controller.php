@@ -7,6 +7,9 @@ class Program extends Controller{
         $this->dosing = new Dosing();        
     }
 
+
+
+
     /**
      * Get all planifications
      * ROUTINES [ days_per_week, heating, workouts ]
@@ -19,7 +22,7 @@ class Program extends Controller{
 
         );
 
-        if( $author_id != null ) $args['author'] = $author_id;
+        if( $author_id != null ) $args['author'] = (int)$author_id;
 
         $search_results = get_posts($args);
 
@@ -73,8 +76,38 @@ class Program extends Controller{
                     'warmUpId' => $heating_id,
                     'warmUpName' => $heating_data['title'],
                     'daysPerWeek'=> $routine_days_per_week_number,
-                    'totalExercises' => $workouts_amount
+                    'totalExercises' => $workouts_amount,
+                    'aditionalsWorkouts' => array(
+                        'note'=> '',
+                        'exercises'=> array()
+                    )
                 );
+
+                $routines[$routine]['aditionalsWorkouts'] = array(
+                    'note' => $data['routines_'.$routine.'_final_0_final_note'][0],
+                );
+    
+                $workout_data = $this->get_data( 'exercise', $data['routines_'.$routine.'_final_0_workout_1'][0] );
+                $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                    'id'=> $data['routines_'.$routine.'_final_0_workout_1'][0],
+                    'name'=> $workout_data['title'],
+                    'index'=>1
+                );
+    
+                $workout_data = $this->get_data( 'exercise', $data['routines_'.$routine.'_final_0_workout_2'][0] );
+                $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                    'id'=> $data['routines_'.$routine.'_final_0_workout_2'][0],
+                    'name'=> $workout_data['title'],
+                    'index'=>2
+                );
+    
+                $workout_data = $this->get_data( 'exercise', $data['routines_'.$routine.'_final_0_workout_3'][0] );
+                $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                    'id'=> $data['routines_'.$routine.'_final_0_workout_3'][0],
+                    'name'=> $workout_data['title'],
+                    'index'=>3
+                );
+
                 $routines_days_per_week_total += $routine_days_per_week_number;
 
                 if( $workouts_amount <= 0 ){
@@ -178,8 +211,37 @@ class Program extends Controller{
                 'warmUpId' => $heating_id,
                 'warmUpName' => $heating_data['title'],
                 'daysPerWeek'=> $routine_days_per_week_number,
-                'totalExercises' => $workouts_amount
+                'totalExercises' => $workouts_amount,
             );
+
+            $routines[$routine]['aditionalsWorkouts'] = array(
+                'note' => $data['routines_'.$routine.'_final_0_final_note'][0],
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_'.$routine.'_final_0_workout_1'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_'.$routine.'_final_0_workout_1'][0],
+                'name'=> $workout_data['title'],
+                'index'=>1
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_'.$routine.'_final_0_workout_2'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_'.$routine.'_final_0_workout_2'][0],
+                'name'=> $workout_data['title'],
+                'index'=>2
+            );
+
+            $workout_data = $this->get_data( 'exercise', $data['routines_'.$routine.'_final_0_workout_3'][0] );
+            $routines[$routine]['aditionalsWorkouts']['exercises'][] = array(
+                'id'=> $data['routines_'.$routine.'_final_0_workout_3'][0],
+                'name'=> $workout_data['title'],
+                'index'=>3
+            );
+            
+            
+
+
             $routines_days_per_week_total += $routine_days_per_week_number;
 
             if( $workouts_amount <= 0 ){
@@ -225,7 +287,7 @@ class Program extends Controller{
             'daysPerWeekTotal'=> $routines_days_per_week_total,
             'athletes' => $athletes,
             'routines' => $routines,
-            'trainer'=> $data['trainer'][0]
+            'trainerId'=> $data['trainer'][0]
             // 'author' => array(
             //     'id'=> $author_id,
             //     'name'=> $author_data->display_name,
@@ -413,11 +475,19 @@ class Program extends Controller{
                 );
             }
 
+            $aditional_workouts = array(
+                'final_note' => $routines_data['aditionalsWorkouts']['note'],
+                'workout_1' => $routines_data['aditionalsWorkouts']['exercises'][0]['id'],
+                'workout_2' => $routines_data['aditionalsWorkouts']['exercises'][1]['id'],
+                'workout_3' => $routines_data['aditionalsWorkouts']['exercises'][2]['id'],
+            );
+
             $routines[] = array(
                 'id'=> $routines_data['id'],
                 'days_per_week' => $routines_data['daysPerWeek'],
                 'heating' => $routines_data['warmUpId'],
                 'workouts' => $workouts,
+                'final'=> array($aditional_workouts)
             );
         }
 
@@ -441,11 +511,9 @@ class Program extends Controller{
 
     }
 
-
-
     public function handle_update_program($program_data, $program_id ){
 
-        $program = $this->map_program_fields( $program_data);        
+        $program = $this->map_program_fields( $program_data);                
         return $this->update_program($program, $program_id);
     }
 
@@ -495,6 +563,8 @@ class Program extends Controller{
 
                     $this->update_routine_days_per_week( $routine, $routines, $program_id  );
                     $this->bulk_update_workout( $routine['workouts'], $routine['id'], $program_id );
+                    $this->bulk_update_aditional_workout( $routine['aditionalsWorkouts'], $routine['id'], $program_id );
+
                 }else{
                     $this->create_routine( $routine, $routines ,$program_id);
                 }
@@ -531,7 +601,6 @@ class Program extends Controller{
 
     }
 
-
     /**
      *  Fn to update a routine inside an existing planification
      *
@@ -545,7 +614,6 @@ class Program extends Controller{
         $this->update_routine_days_per_week( $routine, $routines, $program_id );
     }
 
-
     public function update_routine_days_per_week($routine,$routines, $program_id){
         $max_day_for_week_exceeded = $this->max_day_for_week_exceeded($routine, $routines );
 
@@ -557,7 +625,6 @@ class Program extends Controller{
         update_row( "routines_".($routine['id'] - 1)."_heating", $routine['id'], $routine['heating'], $program_id);
 
     }
-
 
     // Add a new routine into a planification
     public function create_routine($routine_data, $planification_routines, $program_id ){
@@ -571,6 +638,7 @@ class Program extends Controller{
             $error = new WP_Error( '001', 'Excediste la cantidad maxima de dias por semana para una planificacion', 'Some information' );
             return wp_send_json_error($error, 404);
         }else{            
+            
             add_row('routines', $routine_data, $program_id);
         }
 
@@ -585,7 +653,21 @@ class Program extends Controller{
         $this->update_workout($workout, $routine_id ,$program_id);
     }
 
-
+    public function bulk_update_aditional_workout($workouts, $routine_id, $program_id ){
+        
+        // update_sub_field( "routines_".($routine_id) - 1 ."_workouts",  $workouts ,  $program_id );
+         // add_row( array('routines', $routine_id, 'workouts', $workouts ), $program_id );
+         
+         // var_dump($add_workout);die;
+ 
+         delete_field( "routines_". ($routine_id  - 1 )."_final", $program_id);
+ 
+         //$add_workout = add_row("routines_workouts", $workouts, $program_id);
+         add_row( array('routines', $routine_id, 'final'), $workouts, $program_id );
+        
+ 
+ 
+     }
 
     public function bulk_update_workout($workouts, $routine_id, $program_id ){
         
@@ -655,9 +737,6 @@ class Program extends Controller{
 
     }
 
-
-
-
     public function handle_delete_program($program_sku){
         $program = $this->delete_program( $program_sku );
         return $program;
@@ -687,10 +766,6 @@ class Program extends Controller{
         $deleted = delete_row('routines',  $routine_row, $planification_id );
         return $deleted;
     }
-
-
-
-
 
     public function handle_delete_workout($request){
         $data = $request->get_json_params();
@@ -740,9 +815,6 @@ class Program extends Controller{
     }
 
 
-
-
-
     /**
      *  Check for days available to create the routine
      */
@@ -763,6 +835,13 @@ class Program extends Controller{
 
     }
 
+
+    public function clone_program( $program_data ){
+        $program = $this->create_program($program_data);
+        
+        $program_data = $program_data->get_json_params();        
+        return $this->handle_update_program($program_data, $program['id']);
+    }
 
 
     /**
@@ -808,38 +887,10 @@ class Program extends Controller{
 
         update_field('trainer', $trainerId, $program_id );
 
-
-        // // Add routines
-        // if( !empty($routines) ){
-        //     foreach( $routines as $_routine  ){
-        //         $workouts = array();
-
-        //         foreach( $_routine['exercises'] as $workout ){
-
-        //             $workouts[] = array(
-        //                 "workout" => array( $workout['id'] ),
-        //                 "super_serie"=> array( $workout['superWorkOutId'] ),
-        //                 "note"=> array( $workout['note'] ),
-        //                 "dosage"=> array( $workout['dosings']['id'] )
-        //             );
-        //         }
-
-        //         $routine = array(
-        //             "days_per_week"=> $_routine['daysPerWeek'],
-        //             "heating" => array($_routine['warmUpId']),
-        //             "workouts" => $workouts
-        //         );
-
-        //         $this->create_routine($routine, $routines, $program_id);
-        //     }
-        // }
-
-
-
         $created_program = $this->get_program_by_id( $program_id);
 
-        echo json_encode( $created_program );
-        return;
+        //echo json_encode( $created_program );
+        return $created_program;
 
     }
 
