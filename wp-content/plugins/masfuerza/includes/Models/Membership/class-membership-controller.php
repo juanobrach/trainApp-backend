@@ -4,14 +4,18 @@ class Membership extends Controller{
 
     public function __construct(){
         $site_url = get_site_url();
-        include('../wp-load.php'); //Guessing this path based on your code sample... should be wp root
+        include(   ABSPATH . '/wp-load.php'); //Guessing this path based on your code sample... should be wp root
 
         $this->Subscriptions_Manager = WC_Subscriptions_Manager;
         $this->Planification  = new Planification();
 
     }
 
-
+    public function wc_assign_custom_role($args){
+        $args['role'] = 'trainer';
+        return $args;
+    }
+    
     public function get_subscription_by_trainer_id($trainer_id){
         $subscription;
         $subscription_product;
@@ -28,7 +32,7 @@ class Membership extends Controller{
                         
                         $attributes = array();
                         foreach ($product->get_attributes() as $_attributes) {
-                            $attributes[] = array( 
+                            $attributes[$_attributes->get_name()] = array( 
                                 'name' => $_attributes->get_name(),
                                 'value'=> $_attributes->get_options()[0]
                             );
@@ -54,10 +58,13 @@ class Membership extends Controller{
                 }
 
 
+
                 $subscription_data = json_decode( json_encode( $subscription->get_data(), true ) );
                 
                 $isRecurrent = (  $subscription_data->requires_manual_renewal === true ? false : true );
-                $planifications_plan_amount = (int)$subscription_product['attributes'][0]['value'];
+
+
+                $planifications_plan_amount = (int)$subscription_product['attributes']['planificaciones']['value'];
                 $planifications_actives = $this->Planification->get_active_planifications_by_trainer_id($trainer_id);
                 $asigned = $planifications_actives;
             
@@ -78,7 +85,7 @@ class Membership extends Controller{
                     'active'=> $is_active,
                     'from' => date( 'j-m-Y',strtotime($subscription_data->date_created->date) ),
                     'to' =>  date( 'j-m-Y', strtotime($subscription_data->schedule_next_payment->date)),
-                    'daysLeft' => $days_left,
+                    'daysLeft' => (int) $days_left,
                     'woocommerceId'=> $subscription_data->id,
                     'paymentInformation'=> array(
                         'method'=> $subscription_data->payment_method,
@@ -90,6 +97,9 @@ class Membership extends Controller{
                             'asigned' => $asigned,
                             'availables'=> $planifications_plan_amount - $asigned,
                             'total'=> $planifications_plan_amount
+                        ),
+                        'messages' => array(
+                            'total'=> (int)$subscription_product['attributes']['consultas']['value']
                         )   
                     )
 
@@ -151,6 +161,8 @@ class Membership extends Controller{
 
                             
                 $subscription_data = json_decode( json_encode( $subscription->get_data(), true ) );
+                
+                
 
                 $isRecurrent = (  $subscription_data->requires_manual_renewal === true ? false : true );
                 $isActive =  ( $subscription_data->status === 'active' ? true : false );

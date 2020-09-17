@@ -6,12 +6,43 @@ class Ticket extends Controller{
 
     }
 
+    public function get_categories(){
+        $headers = array( 
+            'Content-type' => 'application/json',
+        );
+        $url = get_site_url() . '/wp-json/supportcandy/v1/categories';
+        $response = wp_remote_post( $url , array(
+            'method'      => 'GET',
+            'timeout'     => 45,
+            'cookies'     => array(),
+            'headers'     =>  $headers
+            )
+        );
+        $response = json_decode( $response['body'] );
+        return $response;
+
+    }
+
     public function create_ticket($data){    
+
+        $categories= $this->get_categories();
+        $key = array_search('Reportes', array_column($categories, 'name'));
         
+        
+        $ticket_subject = $data->ticket->subject ? $data->ticket->subject : "";
+        if($data->category  === "" ){
+            $ticket_category=  "1";
+        }else{
+            $ticket_category = $categories[$key]->id;
+        } 
+        
+        if( $ticket_category === $categories[$key]->id ){
+             $ticket_subject = "Reportando al usuario " .$data->ticket->trainer->name ." (".$data->ticket->trainer->id.")";
+        }  
         $fields = array(
-            'ticket_subject' => $data->ticket->subject,
+            'ticket_subject' => $ticket_subject,
             'ticket_description' => $data->ticket->message,
-            'ticket_category'=> "1",
+            'ticket_category'=>  $ticket_category,
             'ticket_priority' => "43"
         );
 

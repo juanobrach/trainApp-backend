@@ -61,9 +61,23 @@ class Auth extends Controller{
                 return $error;
             }else{
 
-                $user_meta = get_user_meta($user->data->ID);
+                // User exists, verify if it's an athlete and if it's status is active.
+
+                
+                $user_meta = get_user_meta( $user->data->ID);
                 $user_data = get_userdata( $user->data->ID );
                 
+                if( in_array( 'athlete', (array) $user_data->caps ) ){
+                        
+                    if( isset($user_meta['user_is_active']) && boolval($user_meta['user_is_active'][0])  !== true ){                        
+                        return   array(
+                            'error'=> true,
+                            'message'=> 'El usuario se encuentra inactivo'
+                        );
+                    }                
+                }
+
+                $user_address = get_usermeta(  $user->data->ID, 'address' );
 
                 $support_auth_user =  get_user_meta($data['user_id'],'support_auth_user', true);
                 $support_auth_token =  get_user_meta($data['user_id'],'support_auth_token', true);
@@ -84,6 +98,7 @@ class Auth extends Controller{
                     
                 }
 
+                
 
                 //$token = $user->data->token;
                 //$valid_token = $this->validate_token($token);
@@ -96,12 +111,24 @@ class Auth extends Controller{
                         'auth_user'=> $support_auth_user,
                         'auth_token'=> $support_auth_token
                     ),
+                    'isLoggedIn'=>true,
                     'first_name' => $user_meta['first_name'][0],
                     'last_name' => $user_meta['last_name'][0],
                     'username' => $user->data->user_nicename,
                     'email' => $user->data->user_email,
-                    'roles' => $user_data->roles
-                );                
+                    'roles' => $user_data->roles,
+                    'phone' => $user_meta['phone'][0],
+                    'profile_picture' => $user_meta['user_profile_avatar'][0],
+                    'address'=> array(
+                        'country'=> '',
+                        'state' => '',
+                        'city' => ''
+                    )
+                );         
+                
+                if( $user_address ){
+                    $user['address'] = $user_address;
+                }
                 return $user;
             }
             
@@ -133,6 +160,67 @@ class Auth extends Controller{
         if( $response->code === 'jwt_auth_invalid_token' ) return false;
         
         return true;         
+    }
+
+
+    public function update_user_data($user_id, $data){
+
+        $user_address = $data['address'];
+            
+       $user_phone = $data['phone'];
+
+        if( $user_phone != '' ){
+            update_user_meta( $user_id, 'phone', $user_phone );
+        }
+
+        if( $user_address ){
+            update_user_meta( $user_id, 'address', $user_address );
+        }
+
+
+        return $this->get_user_data( $user_id );
+
+    }
+
+    public function get_user_data( $user_id ){
+        $user_meta = get_user_meta( $user_id);
+        $user_data = get_userdata( $user_id );
+        $user_address = get_usermeta(  $user_id, 'address' );
+
+        $support_auth_user =  get_user_meta( $user_id,'support_auth_user', true);
+        $support_auth_token =  get_user_meta( $user_id,'support_auth_token', true);
+        
+
+        //$token = $user->data->token;
+        //$valid_token = $this->validate_token($token);
+        //if( $valid_token === false  ) return false;
+
+        $user = array(
+            'ID' => $user_id,
+          //  'token' => $token,
+            'support' => array(
+                'auth_user'=> $support_auth_user,
+                'auth_token'=> $support_auth_token
+            ),
+            'isLoggedIn'=>true,
+            'first_name' => $user_meta['first_name'][0],
+            'last_name' => $user_meta['last_name'][0],
+            'username' => $user->data->user_nicename,
+            'email' => $user->data->user_email,
+            'roles' => $user_data->roles,
+            'phone' => $user_meta['phone'][0],
+            'profile_picture' => $user_meta['user_profile_avatar'][0],
+            'address'=> array(
+                'country'=> '',
+                'state' => '',
+                'city' => ''
+            )
+        );         
+        
+        if( $user_address ){
+            $user['address'] = $user_address;
+        }
+        return $user;
     }
 
 
