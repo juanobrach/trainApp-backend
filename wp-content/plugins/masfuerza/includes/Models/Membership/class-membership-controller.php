@@ -6,7 +6,6 @@ class Membership extends Controller{
         $site_url = get_site_url();
         include(   ABSPATH . '/wp-load.php'); //Guessing this path based on your code sample... should be wp root
 
-        $this->Subscriptions_Manager = WC_Subscriptions_Manager;
         $this->Planification  = new Planification();
 
     }
