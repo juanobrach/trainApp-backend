@@ -10,7 +10,6 @@ wp-content/plugins/*
 
 
 
-
 # ignore specific themes
 wp-content/themes/twenty*/
 
