@@ -148,4 +148,46 @@ class Masfuerza_Posts {
 	}
 
 
+
+	public function after_password_reset( $user_id ) {
+		
+		// Check if have submitted 
+		$confirm = ( isset($_GET['checkemail'] ) ? $_GET['checkemail'] : '' );
+
+		if( $confirm ) {
+				$url = home_url();
+				$production_url = "api.masfuerza";
+				$stage_url  = "stage.api.masfuerza";
+				$local_url  = "local.masfuerza";
+
+				$production_app_url = "https://trainapp.masfuerza.net";
+				$stage_app_url = "https://stage.trainapp.masfuerza.net";
+				$local_app_url = "http://local.trainapp.com";
+
+				$redirect_to_url = $production_app_url;
+			
+				// Production
+				if (strpos($url, $production_url) !== false) {
+					$redirect_to_url = $production_app_url;
+				}
+
+				// Stage
+				if (strpos($url, $stage_url) !== false) {
+					$redirect_to_url = $stage_app_url;
+				}
+
+				// Local
+				if (strpos($url, $local_url) !== false) {
+					$redirect_to_url = $local_app_url;
+				}
+		
+				wp_redirect( $redirect_to_url ); 
+				exit;
+		}
+		
+ 
+	}
+	
+
+
 }
