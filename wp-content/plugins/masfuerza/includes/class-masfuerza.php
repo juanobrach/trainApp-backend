@@ -252,7 +252,7 @@ class Masfuerza {
 
 		// When the user traineer save a new user, create a relationship between user adding a metadata to the new user.
 		$this->loader->add_action('user_register', $masFuerza_posts, 'registration_save', 10, 1);
-		$this->loader->add_action('login_headerurl', $masFuerza_posts, 'after_password_reset', 10, 1);
+		$this->loader->add_action('after_password_reset', $masFuerza_posts, 'after_password_reset', 10, 1);
 
 
 		// Filter JWT login

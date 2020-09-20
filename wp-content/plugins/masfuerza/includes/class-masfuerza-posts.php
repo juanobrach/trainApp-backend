@@ -151,10 +151,7 @@ class Masfuerza_Posts {
 
 	public function after_password_reset( $user_id ) {
 		
-		// Check if have submitted 
-		$confirm = ( isset($_GET['checkemail'] ) ? $_GET['checkemail'] : '' );
 
-		if( $confirm ) {
 				$url = home_url();
 				$production_url = "api.masfuerza";
 				$stage_url  = "stage.api.masfuerza";
@@ -183,7 +180,6 @@ class Masfuerza_Posts {
 		
 				wp_redirect( $redirect_to_url ); 
 				exit;
-		}
 		
  
 	}
