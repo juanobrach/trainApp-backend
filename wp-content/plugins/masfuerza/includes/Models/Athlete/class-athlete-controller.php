@@ -180,9 +180,13 @@ class Athlete extends Controller{
         
         
                 $u = new WP_User($user_id);
-                $u->add_role( 'athlete' );    
-                $u->remove_role( 'subscriber' );
-                $u->remove_role( 'director' );
+                $roles = $u->roles;
+            
+                
+                foreach($roles as $rol){
+                    $u->remove_role($rol);
+                }
+                $u->add_role( 'athlete' );
         
                 
                 
