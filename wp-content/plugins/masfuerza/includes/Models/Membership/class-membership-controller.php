@@ -16,11 +16,14 @@ class Membership extends Controller{
     }
     
     public function get_subscription_by_trainer_id($trainer_id){
-        $subscription;
+        $subscription = array(
+            'active'=> false
+        );
         $subscription_product;
 
 
         $query_user_subscription = wcs_get_users_subscriptions($trainer_id);
+        
         if( !empty($query_user_subscription) ){
             foreach($query_user_subscription as $subscription ){
 
