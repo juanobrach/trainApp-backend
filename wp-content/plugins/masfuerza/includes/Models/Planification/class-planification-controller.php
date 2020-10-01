@@ -904,7 +904,7 @@ class Planification extends Controller{
 
     public function get_active_planifications_by_trainer_id($trainer_id){
         $args = array(
-            'post_author'        =>  $trainer_id,
+            'author'        =>  $trainer_id,
             'numberposts' =>  -1,
             'post_type'		=> 'planification',
             'meta_key'		=> 'planification_active',
@@ -918,7 +918,7 @@ class Planification extends Controller{
 
     public function get_planifications_by_trainer_id($trainer_id){
         $args = array(
-            'post_author'        =>  $trainer_id,
+            'author'        =>  $trainer_id,
             'numberposts' =>  -1,
             'post_type'		=> 'planification'
         );
