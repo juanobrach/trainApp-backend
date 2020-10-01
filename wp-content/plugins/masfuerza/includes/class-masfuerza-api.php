@@ -18,7 +18,6 @@ class Masfuerza_Api {
 	 */
 	public function init_api( ) {
 		header("Access-Control-Allow-Origin: *"); 
-
 		$Auth_api = new AuthAPI();
 		$Planification_api = new PlanificationAPI();
 		$Program_api = new ProgramAPI();
@@ -30,7 +29,6 @@ class Masfuerza_Api {
 		$Membership_api = new MembershipAPI();
 		$Trainer_api = new TrainerAPI();
 		$Ticket_api = new TicketAPI();
-
 	}
 
 
@@ -44,7 +42,6 @@ class Masfuerza_Api {
 		$data['ID'] = $user->ID;
 
 		foreach( $user->roles as $user_rol  ){
-			
 			if($user_rol === "trainer"){
 				// get data for trainer
 				$athletes = array();
