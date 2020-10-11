@@ -163,12 +163,22 @@ class Athlete extends Controller{
         $user_id = wp_create_user($user_credentials["username"],$user_credentials["password"],$user_credentials["email"]);
         
         if ( is_wp_error( $user_id ) ) {
-            $error_string = $user_id->get_error_message();
-           
-                    return array(
-                        'error' => 'true',
-                        'message'=>'ya existe un atleta con ese correo'
-                    );
+
+            $athlete = get_user_by('email', $user_credentials["email"] );            
+            $trainerAsigned = get_user_meta($athlete->ID, 'trainer', true  );
+            
+            if( $trainerAsigned === $data->trainerId ){
+                update_user_meta( $athlete->ID, 'user_is_active', true );        
+                $athlete = $this->get_athlete_by_id($athlete->ID); 
+                return $athlete;
+            }else{
+                $error_string = $user_id->get_error_message();
+                
+                return array(
+                    'error' => 'true',
+                    'message'=>'ya existe un atleta asignado a otro entrenador con ese correo'
+                );
+            }           
         }else{
 
             
