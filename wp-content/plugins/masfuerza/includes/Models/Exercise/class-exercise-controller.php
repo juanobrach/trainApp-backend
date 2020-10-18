@@ -3,7 +3,21 @@ class Exercise extends Controller{
 
     public function __construct(){ }
 
+    public function create_exercise($exercise_data){
+        
+        $categories = $this->get_exercise_categories();
+        $exxercise_id = wp_insert_post(array(
+            'post_type'=>'exercise',
+            'post_status' => 'publish',
+            'post_title'=> $exercise_data['name'],
+            'post_author'=> (int)$exercise_data['trainer_id']
+        ));
 
+        wp_set_object_terms($exxercise_id, $exercise_data['category_id'], 'exercise_category' );
+
+        return $this->get_exercise($exxercise_id);
+
+    }
 
     public function get_exercise_categories(){
         $categories_query = get_terms( 'exercise_category' );
@@ -21,13 +35,17 @@ class Exercise extends Controller{
 
     }
 
-    public function get_all_exercises(){
+    public function get_all_exercises($current_trainer_id){
+        $users = get_users( array( 'search' => 'admin' ) );
+        $admin_user_id = $users[0]->data->ID; 
+        
         $data = array();
         $search_results = get_posts(array( 
             'post_type'=> 'exercise', 
             "posts_per_page" =>  -1,
             'orderby' => 'title',
-            'order'   => 'ASC'
+            'order'   => 'ASC',
+            'author__in' => array($admin_user_id, $current_trainer_id)
         ));
         
 
@@ -75,10 +93,8 @@ class Exercise extends Controller{
         foreach( $search_results as $excercise ){
             
             $excercise_meta = get_post_meta($excercise->ID);
-            // print_r($excercise_meta);
-
-            
             $exercise_category = get_the_terms( $excercise->ID, 'exercise_category' );      
+    
             $category = $exercise_category[0];
 
             $images_ids =  maybe_unserialize( $excercise_meta['images'][0] );
@@ -90,6 +106,7 @@ class Exercise extends Controller{
             $video_url = maybe_unserialize( $excercise_meta['video'][0] );
 
             $data = array(
+                'id'=> $excercise->ID,
                 'name' => $excercise->post_title,
                 'description' => $excercise_meta['description'][0],
                 'category' => array(

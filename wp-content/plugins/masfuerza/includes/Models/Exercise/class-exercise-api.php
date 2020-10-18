@@ -22,17 +22,27 @@ class ExerciseAPI {
             'methods' => 'GET',
             'callback' => array($this, 'get_exercise_categories')
         ));
+
+        register_rest_route( 'masfuerza/v1', '/exercises/create', array(
+            'methods' => 'POST',
+            'callback' => array($this, 'handle_create_exercise')
+        ));
     }
 
 
-    
+    public function handle_create_exercise($request){
+        $exercise_data = $request->get_json_params();
+        return $this->exercise->create_exercise($exercise_data);
+        
+    }
 
     public function get_exercise_categories(){
         return $this->exercise->get_exercise_categories();
     }
 
-    public function get_all_exercises(){
-        return $this->exercise->get_all_exercises();
+    public function get_all_exercises($request){
+        $data = $request->get_params('user_id');        
+        return $this->exercise->get_all_exercises($data['user_id']);
     }
 
     public function get_exercise( $request ){
