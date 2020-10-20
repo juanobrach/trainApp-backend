@@ -110,8 +110,10 @@ class Dosing extends Controller{
 
          if( $trainee_per_week === 3 ){
             foreach( $weeks as $week_index => $week ){
+                $week_index =  $week_index+1;
                 foreach( $week as $day_index => $day ){
-                    update_field('programa_3_weekdays_semana_'.$week_index+1 .'_day_' . $day_index+1, $day, $dosage_id);
+                    $day_index = $day_index + 1;
+                    update_field('programa_3_weekdays_semana_'.$week_index .'_day_' . $day_index, $day, $dosage_id);
                 }
             }
          }
