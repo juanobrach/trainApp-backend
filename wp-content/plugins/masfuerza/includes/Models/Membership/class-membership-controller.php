@@ -198,5 +198,57 @@ class Membership extends Controller{
 
         return $subscription;        
     }
+
+    public function create_subscription($data, $user_id){
+
+        $sku = 'BASIC30';
+        $address = array(
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+            'email'      => $data['email'],
+            'phone'      => '',
+            'address_1'  => '',
+            'address_2'  => '',
+            'city'       => '',
+            'postcode'   => '',
+        );
+    
+        $order = wc_create_order( array( 'customer_id' => $user_id ) ); // Create a WC_Order object and save it.
+        update_post_meta($order->id, '_customer_user', $user_id);
+
+    
+        $order->set_address( $address, 'billing' ); // Set customer billing adress
+        
+        $product = wc_get_product( wc_get_product_id_by_sku( $sku ) );
+        $order->add_product( $product, 1 ); // Add an order line item
+        
+        // Set payment gateway
+        $payment_gateways = WC()->payment_gateways->payment_gateways();
+        $order->set_payment_method( $payment_gateways['cod'] );
+        
+        $order->calculate_totals(); // Update order taxes and totals
+        $order->update_status( 'completed', 'In Store ', true ); // Set order status and save
+        $period = WC_Subscriptions_Product::get_period( $product );
+        $interval = WC_Subscriptions_Product::get_interval( $product );
+        
+        $start_date = gmdate( 'Y-m-d H:i:s' );
+        $sub = wcs_create_subscription(array(
+            'order_id' => $order->get_id(), 
+            'status' => 'pending', // Status should be initially set to pending to match how normal checkout process goes
+            'billing_period' => $period, 
+            'billing_interval' => $interval, 
+            'start_date' => $start_date
+        ));
+
+        if( is_wp_error( $sub ) ){
+            return false;
+        }
+        
+        
+        
+        $sub->add_product( $product, 1 );
+        $sub->update_status( 'active', $note, true );
+        return $sub;
+    }
     
 }
