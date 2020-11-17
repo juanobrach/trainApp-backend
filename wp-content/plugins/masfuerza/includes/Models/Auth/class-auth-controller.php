@@ -6,6 +6,8 @@ class Auth extends Controller{
 
     public function __construct(){ 
         $this->Ticket = new Ticket();
+        $this->Membership = new Membership();
+        
     }
 
     public function Login($data){
@@ -229,6 +231,40 @@ class Auth extends Controller{
         $password = $data['password'];
         wp_set_password( $password, $user_id );
         return true;
+    }
+
+    public function create_free_account($data){
+        
+        $user_credentials = array(
+            "username" => $data['email'],
+            "password" => $data['password'],
+            "email"    => $data['email']
+        );             
+
+     
+        
+
+        $user_id = wp_create_user($user_credentials["username"],$user_credentials["password"],$user_credentials["email"]);
+        if ( is_wp_error( $user_id ) ) {
+            return array(
+                'error'=> 'Ya existe un usuario con el correo seleccionado'
+            );
+        }else{
+            $user = get_user_by('email', $data["email"] );
+            update_user_meta( $user->ID, 'first_name',  $data["first_name"] );        
+            update_user_meta( $user->ID, 'last_name',  $data["last_name"] ); 
+            
+
+            $u = new WP_User($user->ID);
+            $roles = $u->roles;
+            foreach($roles as $rol){
+                $u->remove_role($rol);
+            }
+            $u->add_role( 'trainer');    
+            $this->Membership->create_subscription($data, $user_id);
+            
+        }
+        
     }
 
 }
